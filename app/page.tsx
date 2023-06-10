@@ -1,5 +1,11 @@
 import Image from 'next/image'
+import { Metadata, MetadataRoute } from 'next';
 import styles from './page.module.css'
+
+export const metadata: Metadata = {
+  title: "Christians Home Page",
+  description: "Blah Blah Blah"
+};
 
 export default function Home() {
   return (

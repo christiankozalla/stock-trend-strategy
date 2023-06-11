@@ -45,30 +45,31 @@ export const signals = {
   },
 };
 
-type SignalTableCols = 'data_basis';
+type SignalTableCols = "data_basis";
 export type DataBasis = {
   RSI: number;
   SMA: number;
   Date: string;
   Diff: number;
-}
+};
 
-export const match = (matchFn: (v: DataBasis[]) => boolean) => (basis: RSIBasis[]) => {
-  let accept = false;
-  const data_basis = basis.slice(-5).map((b) => {
-    const Date = Object.keys(b)[0];
-    const { RSI, SMA } = b[Date];
-    const Diff = (RSI / SMA) - 1;
-    return { RSI, SMA, Date, Diff };
-  });
-  accept = matchFn(data_basis);
-  return {
-    accept,
-    data: {
-      table: 'signals',
-      columns: {
-        data_basis: JSON.stringify(data_basis),
-      }
-    }
-  }
-}
+export const match =
+  (matchFn: (v: DataBasis[]) => boolean) => (basis: RSIBasis[]) => {
+    let accept = false;
+    const data_basis = basis.slice(-5).map((b) => {
+      const Date = Object.keys(b)[0];
+      const { RSI, SMA } = b[Date];
+      const Diff = (RSI / SMA) - 1;
+      return { RSI, SMA, Date, Diff };
+    });
+    accept = matchFn(data_basis);
+    return {
+      accept,
+      data: {
+        table: "signals",
+        columns: {
+          data_basis: JSON.stringify(data_basis),
+        },
+      },
+    };
+  };

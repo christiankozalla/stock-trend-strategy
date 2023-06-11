@@ -71,7 +71,6 @@ type MACDResponse = {
   };
 };
 
-
 const rsiKey = "Technical Analysis: RSI";
 
 export type RSIBasis = {
@@ -145,8 +144,12 @@ const calculate = {
         }
         const gain = difference > 0 ? difference : 0;
         const loss = difference < 0 ? Math.abs(difference) : 0;
-        const RSUp: number = prevRSUp ? ((prevRSUp * (period - 1) + gain) / period) : sum(...gains) / gains.length;
-        const RSDown: number = prevRSDown ? ((prevRSDown * (period - 1) + loss) / period)  : sum(...losses) / losses.length;
+        const RSUp: number = prevRSUp
+          ? ((prevRSUp * (period - 1) + gain) / period)
+          : sum(...gains) / gains.length;
+        const RSDown: number = prevRSDown
+          ? ((prevRSDown * (period - 1) + loss) / period)
+          : sum(...losses) / losses.length;
 
         prevRSUp = RSUp;
         prevRSDown = RSDown;
@@ -172,7 +175,6 @@ const calculate = {
   },
 };
 
-
 type AVIndicatorsResponse = {
   "SMA": SMAResponse;
   "EMA": EMAResponse;
@@ -181,13 +183,13 @@ type AVIndicatorsResponse = {
 };
 
 type AVErrorResponse = {
-  Note: 'Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.';
-}
+  Note:
+    "Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.";
+};
 
 function isAVErrorResponse(json: any): json is AVErrorResponse {
   return "Note" in json;
 }
-
 
 export const alphavantage = {
   async series<T extends AVSeries>(
@@ -223,13 +225,17 @@ export const alphavantage = {
               : "TIME_SERIES_WEEKLY_ADJUSTED",
           );
           if (!seriesData) return;
-          return calculate.rsi(seriesData, { period }) as AVIndicatorsResponse[T];
+          return calculate.rsi(seriesData, {
+            period,
+          }) as AVIndicatorsResponse[T];
         } catch (e) {
           console.error("Error AlphaVantage Client 'indicators.get': ", e);
         }
       } else {
         try {
-          const url = new URL(`https://www.alphavantage.co/query?function=${indicator}&symbol=${symbol}&interval=${interval}&time_period=${period}&series_type=close&apikey=${ALPHAVANTAGE_API_KEY}`);
+          const url = new URL(
+            `https://www.alphavantage.co/query?function=${indicator}&symbol=${symbol}&interval=${interval}&time_period=${period}&series_type=close&apikey=${ALPHAVANTAGE_API_KEY}`,
+          );
 
           if (indicator === "MACD") {
             // set default values explicitly
@@ -239,9 +245,10 @@ export const alphavantage = {
 
             url.searchParams.delete("time_period");
           }
-            
+
           const response = await fetch(url);
-          const json: AVIndicatorsResponse[T] | AVErrorResponse = await response.json();
+          const json: AVIndicatorsResponse[T] | AVErrorResponse = await response
+            .json();
           if (isAVErrorResponse(json)) return;
           return json;
         } catch (e) {
@@ -249,5 +256,5 @@ export const alphavantage = {
         }
       }
     },
-  }
+  },
 };

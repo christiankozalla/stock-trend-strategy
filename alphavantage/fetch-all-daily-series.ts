@@ -13,7 +13,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
     const symbol = stockSymbols[i];
     await new Promise((resolve) => setTimeout(resolve, waitInterval));
     console.log("Fetching symbol: ", symbol);
-    const serie = await alphavantage.series(symbol, "TIME_SERIES_DAILY_ADJUSTED");
+    const serie = await alphavantage.series(
+      symbol,
+      "TIME_SERIES_DAILY_ADJUSTED",
+    );
 
     if (typeof serie === "undefined" || Object.keys(serie).length < 2) {
       console.log("No data for", symbol);

@@ -1,10 +1,10 @@
-import Image from 'next/image'
-import { Metadata, MetadataRoute } from 'next';
-import styles from './page.module.css'
+import Image from "next/image";
+import { Metadata, MetadataRoute } from "next";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Christians Home Page",
-  description: "Blah Blah Blah"
+  description: "Blah Blah Blah",
 };
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
+            By{" "}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -97,5 +97,5 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
+  );
 }

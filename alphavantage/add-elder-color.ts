@@ -14,10 +14,14 @@ const addElderColor = async (
   });
 
   if (macd === undefined) {
-    throw Error("Error addElderColor: MACD not found - AlphaVantage API Limit Reached");
+    throw Error(
+      "Error addElderColor: MACD not found - AlphaVantage API Limit Reached",
+    );
   }
   if (ema === undefined) {
-    throw Error("Error addElderColor: EMA not found - AlphaVantage API Limit Reached");
+    throw Error(
+      "Error addElderColor: EMA not found - AlphaVantage API Limit Reached",
+    );
   }
   const macdValues = macd["Technical Analysis: MACD"];
   const emaValues = ema["Technical Analysis: EMA"];

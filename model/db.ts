@@ -42,8 +42,6 @@ if (Object.keys(process.env).includes('DB_MIGRATIONS')) { // DB_MIGRATIONS can b
     default:
       throw Error(`Unknown DB_MIGRATIONS: ${process.env.DB_MIGRATIONS}\nCan be either "UP" or "DOWN"`);
   }
-} else {
-  runMigrations(up);
 }
 
 export { db };

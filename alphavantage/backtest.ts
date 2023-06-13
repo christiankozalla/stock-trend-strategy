@@ -8,14 +8,6 @@ import { DailyCandle } from "./transformation";
 // 2. Read series data for symbol
 // 3. Get first signal, submit a virtual "Order", see if the order gets filled withing 3 days
 
-type BacktestRow = {
-  symbol: string;
-  signalId: number;
-  performance: number;
-  riskRewardRatio: number;
-  status: "open" | "active" | "cancelled" | "target" | "stop";
-};
-
 interface BacktestStatement {
   run(
     symbol: string,

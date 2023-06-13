@@ -1,3 +1,3 @@
 import { join } from "node:path";
 
-export const seriesPath = join(process.cwd(), "data", "series");
+export const seriesPath = (file = '') => join(process.cwd(), "data", "series", file);

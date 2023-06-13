@@ -64,7 +64,6 @@ V = P \ *Risk / 100 /  Max-Drawdown = P * Risk / ( 100 * ( SOP - SSP ) )
 
 import { db } from "../model/db";
 import { readdirSync, readFileSync } from "fs";
-import { join } from "path";
 import { seriesPath } from "./utils";
 import { DailyCandle } from "./transformation";
 
@@ -72,7 +71,7 @@ import { DailyCandle } from "./transformation";
 // Keep track of red DailyCanle and wait for next green DailyCandle
 // Condition: red(low) < green(low)
 // Match a Signal and write it to DB
-const seriesFiles = readdirSync(seriesPath);
+const seriesFiles = readdirSync(seriesPath());
 
 const insertSignal = db.prepare(
   "INSERT INTO signals (symbol, date, open, stop) VALUES (?, ?, ?, ?)",
@@ -82,7 +81,7 @@ for (const fileName of seriesFiles) {
   console.log(`Processing file: ${fileName}`);
   try {
     const candles: DailyCandle[] = JSON.parse(
-      readFileSync(join(seriesPath, fileName)).toString(),
+      readFileSync(seriesPath(fileName)).toString(),
     );
     writeSignals(candles).then(() => {
       console.log(`Finished Writing Signals for ${fileName}`);

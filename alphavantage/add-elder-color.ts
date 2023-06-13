@@ -2,7 +2,6 @@ import { alphavantage } from "@/alphavantage/client";
 import { type DailyCandle } from "@/alphavantage/transformation";
 import { seriesPath } from "./utils";
 import { readdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
 
 const addElderColor = async (
   candles: Omit<DailyCandle, "elder">[],
@@ -56,19 +55,19 @@ const addElderColor = async (
 
 (async () => {
   let waitInterval = 25000;
-  const files = await readdir(seriesPath);
+  const files = await readdir(seriesPath());
   for (let j = 0; j < files.length; j++) {
     const file = files[j];
     try {
       console.log("Adding Elder Color to", file);
       const withElder = await addElderColor(
         JSON.parse(
-          await readFile(join(seriesPath, file), { encoding: "utf-8" }),
+          await readFile(seriesPath(file), { encoding: "utf-8" }),
         ),
       );
 
       await writeFile(
-        join(seriesPath, file),
+        seriesPath(file),
         JSON.stringify(withElder),
       );
       await new Promise((resolve) => setTimeout(resolve, waitInterval)); // wait to respect limit of 5 API calls per minute

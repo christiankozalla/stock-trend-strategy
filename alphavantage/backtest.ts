@@ -1,7 +1,6 @@
 import { db } from "../model/db";
 import type { Signal } from "../model/types";
 import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { seriesPath } from "./utils";
 import { DailyCandle } from "./transformation";
 // 1. Query the DB for all signals of a given symbol
@@ -186,7 +185,7 @@ class OrderPosition {
     const symbol = args[symbolIndex + 1].toUpperCase();
     const signals = selectSignals.all(symbol) as Signal[];
     let series: DailyCandle[] = JSON.parse(
-      await readFile(join(seriesPath, `${symbol}.json`), {
+      await readFile(seriesPath(`${symbol}.json`), {
         encoding: "utf-8",
       }).catch(() => {
         console.log("No series data for ", symbol);
@@ -203,7 +202,7 @@ class OrderPosition {
     }
   } else if (args.includes("--all-symbols")) {
     // node -r @swc-node/register alphavantage/backtest.ts --all-symbols
-    const files = await readdir(seriesPath);
+    const files = await readdir(seriesPath());
     for (let j = 0; j < files.length; j++) {
       const file = files[j];
       const symbol = file.replace(".json", "");
@@ -212,7 +211,7 @@ class OrderPosition {
         console.log("Backtesting...", file);
         const signals = selectSignals.all(symbol) as Signal[];
         const series: DailyCandle[] = JSON.parse(
-          await readFile(join(seriesPath, file), { encoding: "utf-8" }),
+          await readFile(seriesPath(file), { encoding: "utf-8" }),
         );
 
         const riskReward = 1 / 2;

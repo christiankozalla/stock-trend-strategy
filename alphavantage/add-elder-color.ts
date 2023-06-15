@@ -54,7 +54,7 @@ const addElderColor = async (
 };
 
 (async () => {
-  let waitInterval = 25000;
+  let waitInterval = 30000;
   const files = await readdir(seriesPath());
   for (let j = 0; j < files.length; j++) {
     const file = files[j];

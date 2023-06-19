@@ -16,7 +16,7 @@ export function SeriesForm() {
     const response = await fetch(`api/symbols/${symbol}`);
     if (response.status === 200) {
       setError("");
-      const data = await response.json();
+      const data = JSON.parse(await response.json());
       setSeries({ symbol, data });
     } else if (response.status === 404) {
       setError(response.statusText);

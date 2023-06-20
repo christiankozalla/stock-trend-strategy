@@ -13,16 +13,26 @@ export function SeriesForm() {
     if (!symbol) {
       return setError("");
     }
-    const response = await fetch(`api/symbols/${symbol}`);
-    if (response.status === 200) {
-      setError("");
-      const data = JSON.parse(await response.json());
-      setSeries({ symbol, data });
-    } else if (response.status === 404) {
-      setError(response.statusText);
+    const [seriesRes, signalsRes] = await Promise.allSettled([fetch(`api/symbols/${symbol}`), fetch(`/api/signals/${symbol}`)]);
+
+    if (seriesRes.status === 'fulfilled') {
+      if (seriesRes.value.status === 200) {
+        setError("");
+        
+        const data = await seriesRes.value.json();
+        const signals = signalsRes.status === 'fulfilled' ? await signalsRes.value.json() : [];
+
+        setSeries({ symbol, data, signals });
+      } else if (seriesRes.value.status === 404) {
+        setError(seriesRes.value.statusText);
+      } else {
+        setError("");
+      }
     } else {
-      setError("");
+      setError("Service Error. Please try again later.")
     }
+
+
   };
 
   return (

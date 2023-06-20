@@ -14,20 +14,33 @@ export function SeriesChart() {
     const chartEl = useRef<HTMLDivElement | null>(null);
 
     useGoogleCharts(() => {
+        console.log("using google charts", series);
         if (chartEl.current && Array.isArray(series.data) && series.data.length > 0) {
             if (new Date(series.data[0].date) > new Date(series.data[1].date)) series.data.reverse();
 
-            const base: any[] = series.data.map((candle, i) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `${colorMap[candle.elder]}`]);
+            const base: any[] = series.data.map((candle, i) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `fill-color: ${colorMap[candle.elder]};`]);
             base.unshift(["Date", "Low", "Open", "Close", "High", { role: "style" }]);
+
+            // Add "marker" for a signal
+            console.log(series.signals);
+            if (Array.isArray(series.signals) && series.signals.length > 0) {
+                console.log("trying to add signals marker");
+                series.signals.forEach((signal) => {
+                    const index = base.findIndex((data) => data[0] === signal.date);
+                    console.log("processing signal", signal, index);
+                    if (index > -1) {
+                        base[index][5] = base[index][5] + "stroke-width: 5; stroke-color: #000"; // marker for a signal
+                    }
+                });
+            }
 
             const data = google.visualization.arrayToDataTable(base);
             const chart = new google.visualization.CandlestickChart(chartEl.current);
             chart.draw(data, { title: series.symbol, legend: 'none', tooltip: { trigger: 'none' } });
         }
-
     }, { 'packages': ['corechart'] }, [series.data]);
     return (
-        <div style={{ backgroundColor: "lightblue", height: "600px" }}>
+        <div style={{ backgroundColor: "lightblue", height: "100vh" }}>
             <div ref={chartEl} style={{ minHeight: "100%" }}></div>
         </div>
     );

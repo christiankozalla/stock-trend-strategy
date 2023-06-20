@@ -21,9 +21,8 @@ export async function GET(
     );
   }
   const result = await getSeries(symbol.toUpperCase());
-  const body = result.data !== null ? JSON.stringify(result.data) : null;
 
-  return new Response(body, {
+  return new Response(result.data, {
     status: result.status,
     statusText: result.statusText,
   });

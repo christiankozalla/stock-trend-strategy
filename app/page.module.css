@@ -1,0 +1,19 @@
+.main {
+    display: flex;
+    gap: 12px;
+}
+
+.chart {
+    width: 75vw;
+}
+
+.sidebar {
+    width: 25vw;
+}
+
+@media screen and (max-width: 768px) {
+    .main {
+        flex-direction: column;
+    }
+    
+}

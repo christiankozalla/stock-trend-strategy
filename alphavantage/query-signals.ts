@@ -16,7 +16,7 @@ console.log(symbols);
 for (const symbol of symbols) {
   const rows = selectSignals.all(symbol.toUpperCase());
   console.log(rows);
-  console.log("#Symbols", rows.length);
+  console.log("#Signals", rows.length);
 }
 
 db.close();

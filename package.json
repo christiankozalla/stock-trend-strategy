@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "cli:fetch-daily-series": "node -r @swc-node/register alphavantage/fetch-all-daily-series.ts",
+    "cli:fetch-daily-series": "node -r @swc-node/register alphavantage/fetch-daily-series.ts",
     "cli:add-elder-color": "node -r @swc-node/register alphavantage/add-elder-color.ts",
     "cli:write-signals": "node -r @swc-node/register alphavantage/write-signals.ts",
     "cli:query-signals": "node -r @swc-node/register alphavantage/query-signals.ts",

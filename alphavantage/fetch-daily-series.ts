@@ -27,7 +27,6 @@ import { seriesPath } from "./utils";
     }
 
     const dataModelConformSerie = transform(serie);
-    // add Elder color
 
     try {
       const existingSerie: Partial<DailyCandle>[] = JSON.parse(

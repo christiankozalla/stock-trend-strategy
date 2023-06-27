@@ -65,7 +65,7 @@ V = P \ *Risk / 100 /  Max-Drawdown = P * Risk / ( 100 * ( SOP - SSP ) )
 import { db } from "../model/db";
 import { readdirSync, readFileSync } from "fs";
 import { seriesPath } from "./utils";
-import { DailyCandle } from "./transformation";
+import { type DailyCandle } from "./transformation";
 
 // Loop over all DailyCandles from oldest to latest
 // Keep track of red DailyCanle and wait for next green DailyCandle

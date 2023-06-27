@@ -191,6 +191,9 @@ function isAVErrorResponse(json: any): json is AVErrorResponse {
   return "Note" in json;
 }
 
+/**
+ * @deprecated use alpaca/client.ts instead
+ */
 export const alphavantage = {
   async series<T extends AVSeries>(
     symbol: string,

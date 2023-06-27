@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { seriesPath } from "@/alphavantage/utils";
-import { db } from "@/model/db";
+import { seriesPath } from "@/alpaca/utils";
 
 type Context = {
   params: { symbol: string };

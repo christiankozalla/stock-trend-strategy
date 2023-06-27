@@ -1,6 +1,6 @@
 "use client";
 import React, { Dispatch, SetStateAction, createContext, useState } from "react";
-import { type DailyCandle } from "@/alphavantage/transformation";
+import { type DailyCandle } from "@/alpaca/transformation";
 import { type Signal } from "@/model/types";
 
 

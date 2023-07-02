@@ -1,6 +1,6 @@
 import { db } from "../model/db";
 
-const selectSignals = db.prepare("SELECT * FROM signals WHERE symbol = ?");
+const selectSignals = db.prepare("SELECT COUNT(*) FROM signals_alpaca WHERE symbol = ?");
 const args = process.argv.slice(2);
 
 // npm run cli:query-signals -- --symbols AAPL AMZN V ZS
@@ -15,8 +15,7 @@ console.log(symbols);
 
 for (const symbol of symbols) {
   const rows = selectSignals.all(symbol.toUpperCase());
-  console.log(rows);
-  console.log("#Signals", rows.length);
+  console.log("#Signals", rows);
 }
 
 db.close();

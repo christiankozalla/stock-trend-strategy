@@ -8,8 +8,8 @@
     "start": "next start",
     "cli:fetch-daily-series": "node -r @swc-node/register alpaca/fetch-daily-series.ts",
     "cli:add-elder-color": "node -r @swc-node/register alpaca/add-elder-color.ts",
-    "cli:write-signals": "node -r @swc-node/register alphavantage/write-signals.ts",
-    "cli:query-signals": "node -r @swc-node/register alphavantage/query-signals.ts",
+    "cli:write-signals": "node -r @swc-node/register alpaca/write-signals.ts",
+    "cli:query-signals": "node -r @swc-node/register alpaca/query-signals.ts",
     "cli:db-up": "DB_MIGRATIONS=UP node -r @swc-node/register model/db.ts",
     "cli:db-down": "# DB_MIGRATIONS=DOWN node -r @swc-node/register model/db.ts"
   },

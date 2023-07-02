@@ -63,6 +63,7 @@ V = P \ *Risk / 100 /  Max-Drawdown = P * Risk / ( 100 * ( SOP - SSP ) )
 */
 
 import { db } from "../model/db";
+import { SqliteError } from "better-sqlite3";
 import { readdirSync, readFileSync } from "fs";
 import { seriesPath } from "./utils";
 import { type DailyCandle } from "./transformation";
@@ -74,7 +75,7 @@ import { type DailyCandle } from "./transformation";
 const seriesFiles = readdirSync(seriesPath());
 
 const insertSignal = db.prepare(
-  "INSERT INTO signals (symbol, date, open, stop) VALUES (?, ?, ?, ?)",
+  "INSERT INTO signals_alpaca (symbol, date, open, stop) VALUES (?, ?, ?, ?)",
 );
 
 for (const fileName of seriesFiles) {
@@ -96,7 +97,7 @@ process.on("beforeExit", () => db.close());
 async function writeSignals(candles: DailyCandle[]) {
   let redCandle: DailyCandle | undefined = undefined; //  is always the latest red candle
   let greenCandle: DailyCandle | undefined = undefined;
-  for (let i = candles.length - 1; i >= 0; i--) {
+  for (let i = 0; i < candles.length; i++) {
     const candle = candles[i];
     if (candle.elder === "red") {
       redCandle = candle;
@@ -109,7 +110,12 @@ async function writeSignals(candles: DailyCandle[]) {
           console.log("writeSignal for ", candle.symbol);
           const open = Number(greenCandle.h);
           const stop = Number(redCandle.l);
-          insertSignal.run(candle.symbol, candle.date, open, stop);
+          try {
+            insertSignal.run(candle.symbol, candle.date, open, stop);
+
+          } catch (e) {
+            console.log("DB Error: searchys", e instanceof SqliteError ? e.message : e);
+          }
           redCandle = undefined;
           continue;
         } else {

@@ -18,7 +18,7 @@ export async function GET(
   });
 }
 
-const signalStmt = db.prepare(`SELECT * FROM signals WHERE symbol = ?`);
+const signalStmt = db.prepare(`SELECT * FROM signals_alpaca WHERE symbol = ?`);
 
 async function getSignals(symbol: string) {
   try {

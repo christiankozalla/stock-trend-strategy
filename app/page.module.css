@@ -13,7 +13,14 @@
 
 @media screen and (max-width: 768px) {
     .main {
-        flex-direction: column;
+        flex-direction: column-reverse;
+    }
+    .chart {
+        width: unset;
+    }
+    
+    .sidebar {
+        width: unset;
     }
     
 }

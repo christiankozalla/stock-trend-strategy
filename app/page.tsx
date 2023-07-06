@@ -1,5 +1,6 @@
 import { SeriesChart } from "@/components/SeriesChart";
 import { SeriesForm } from "@/components/SeriesForm";
+import { Signals } from "@/components/Signals";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -12,7 +13,7 @@ export default function Home() {
       <section className={styles.sidebar}>
         <h2>Symbol Lookup</h2>
         <SeriesForm />
-
+        <Signals />
       </section>
     </main>
   );

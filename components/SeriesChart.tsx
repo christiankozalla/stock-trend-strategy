@@ -24,10 +24,8 @@ export function SeriesChart() {
             // Add "marker" for a signal
             console.log(series.signals);
             if (Array.isArray(series.signals) && series.signals.length > 0) {
-                console.log("trying to add signals marker");
                 series.signals.forEach((signal) => {
                     const index = base.findIndex((data) => data[0] === signal.date);
-                    console.log("processing signal", signal, index);
                     if (index > -1) {
                         base[index][5] = base[index][5] + "stroke-width: 5; stroke-color: #000"; // marker for a signal
                     }

@@ -1,0 +1,12 @@
+{
+    "folders": [
+        {
+            "name": "Deno App",
+            "path": "./app"
+        },
+        {
+            "name": "React Frontend",
+            "path": "./frontend"
+        }
+    ]   
+}

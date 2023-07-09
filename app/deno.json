@@ -1,0 +1,9 @@
+{
+    "tasks": {
+        "fetch:daily": "deno run -A cli/fetch-all-daily-series.ts",
+        "db:query": "deno run -A --unstable db/query.ts",
+        "dev": "deno run --watch -A --unstable main.ts",
+        "main": "deno run -A --unstable main.ts",
+        "update-lock": "deno cache --lock=deno.lock --lock-write main.ts",
+    }
+}

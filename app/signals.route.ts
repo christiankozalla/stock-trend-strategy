@@ -39,7 +39,7 @@ function getSignalsByDate(date: string) {
   }
 }
 
-export const byDate = ["/api/signals", byDateHandler] as const;
+export const signalsByDate = ["/api/signals", byDateHandler] as const;
 
 function bySymbolHandler(
   req: RequestWithContext,
@@ -71,4 +71,4 @@ function getSignalsBySymbol(symbol: string) {
   }
 }
 
-export const bySymbol = ["/api/signals/:symbol", bySymbolHandler] as const;
+export const signalsBySymbol = ["/api/signals/:symbol", bySymbolHandler] as const;

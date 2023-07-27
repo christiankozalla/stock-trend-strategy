@@ -1,5 +1,5 @@
 import { alpaca } from "./client.ts";
-import { join } from "https://deno.land/std@0.193.0/path/mod.ts";
+import { join } from "std/path/mod.ts";
 import { type DailyCandle, transform } from "./transformation.ts";
 import stockSymbols from "./symbols.json" assert { type: "json" };
 

@@ -1,5 +1,5 @@
 import { type DailyCandle } from "./transformation.ts";
-import { join } from "https://deno.land/std@0.193.0/path/mod.ts";
+import { join } from "std/path/mod.ts";
 
 function sum(...summands: number[]) {
   return summands.reduce((sum, summand) => sum + Math.abs(summand), 0);

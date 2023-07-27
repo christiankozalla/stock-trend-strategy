@@ -1,5 +1,5 @@
 import { Database } from "https://deno.land/x/sqlite3@0.9.1/mod.ts";
-import { join } from "https://deno.land/std@0.193.0/path/mod.ts";
+import { join } from "std/path/mod.ts";
 
 const __dirname = new URL('.', import.meta.url).pathname;
 const db = new Database(join(__dirname, "..", "data", "application.db"));

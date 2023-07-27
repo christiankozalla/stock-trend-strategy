@@ -63,7 +63,7 @@ V = P \ *Risk / 100 /  Max-Drawdown = P * Risk / ( 100 * ( SOP - SSP ) )
 */
 
 import { db } from "../model/db.ts";
-import { join } from "https://deno.land/std@0.193.0/path/mod.ts";
+import { join } from "std/path/mod.ts";
 import { type DailyCandle } from "./transformation.ts";
 
 // Loop over all DailyCandles from oldest to latest

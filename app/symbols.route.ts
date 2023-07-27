@@ -1,4 +1,4 @@
-import { join } from "https://deno.land/std@0.193.0/path/mod.ts";
+import { join } from "std/path/mod.ts";
 import { ServerResponse, type RequestWithContext } from "./server.ts";
 
 const textDecoder = new TextDecoder("utf-8");

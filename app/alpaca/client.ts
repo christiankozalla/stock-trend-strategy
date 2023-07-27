@@ -1,6 +1,6 @@
 import {
   encode as encodeBase64,
-} from "https://deno.land/std@0.193.0/encoding/base64.ts";
+} from "std/encoding/base64.ts";
 
 const barsExample = {
   "bars": [{

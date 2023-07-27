@@ -1,4 +1,4 @@
-import "https://deno.land/std@0.193.0/dotenv/load.ts"; // load env vars from .env
+import "std/dotenv/load.ts"; // load env vars from .env
 import { Server } from "./server.ts";
 import { getSymbol } from "./symbols.route.ts";
 import { signalsByDate, signalsBySymbol } from "./signals.route.ts";

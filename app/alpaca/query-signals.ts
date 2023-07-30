@@ -1,6 +1,8 @@
 import { db } from "./model/db";
 
-const selectSignals = db.prepare("SELECT COUNT(*) FROM signals_alpaca WHERE symbol = ?");
+const selectSignals = db.prepare(
+  "SELECT COUNT(*) FROM signals_alpaca WHERE symbol = ?",
+);
 const args = process.argv.slice(2);
 
 // npm run cli:query-signals -- --symbols AAPL AMZN V ZS

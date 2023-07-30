@@ -14,12 +14,12 @@ export type DailyCandle = {
     value: number;
     signal?: number;
     hist?: number;
-  }
+  };
 };
 
 export function transform(
   serie: AlpacaBarsResponse,
-): Omit<DailyCandle, "elder" | 'ema'>[] {
+): Omit<DailyCandle, "elder" | "ema">[] {
   const result = [];
 
   for (const bar of serie.bars) {

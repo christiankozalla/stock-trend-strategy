@@ -71,4 +71,7 @@ function getSignalsBySymbol(symbol: string) {
   }
 }
 
-export const signalsBySymbol = ["/api/signals/:symbol", bySymbolHandler] as const;
+export const signalsBySymbol = [
+  "/api/signals/:symbol",
+  bySymbolHandler,
+] as const;

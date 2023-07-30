@@ -1,11 +1,11 @@
 {
-    "imports": {
-        "std/": "https://deno.land/std@0.193.0/"
-    },
-    "tasks": {
-        "cli:update-series-and-signals": "deno run -A --unstable cron/update-series-and-signals.ts",
-        "dev": "deno run --watch -A --unstable main.ts",
-        "main": "deno run -A --unstable main.ts",
-        "update-lock": "deno cache --lock=deno.lock --lock-write main.ts"
-    }
+  "imports": {
+    "std/": "https://deno.land/std@0.193.0/"
+  },
+  "tasks": {
+    "cli:update-series-and-signals": "deno run -A --unstable cron/update-series-and-signals.ts",
+    "dev": "deno run --watch -A --unstable main.ts",
+    "main": "deno run -A --unstable main.ts",
+    "update-lock": "deno cache --lock=deno.lock --lock-write main.ts"
+  }
 }

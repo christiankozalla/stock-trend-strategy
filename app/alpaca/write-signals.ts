@@ -72,7 +72,8 @@ import { type DailyCandle } from "./transformation.ts";
 // Match a Signal and write it to DB
 const textDecoder = new TextDecoder("utf-8");
 const __dirname = new URL(".", import.meta.url).pathname;
-const seriesPath = (fileOrPath = "") => join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
+const seriesPath = (fileOrPath = "") =>
+  join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
 globalThis.addEventListener("beforeunload", () => db.close());
 
 export async function writeSignals() {
@@ -83,16 +84,14 @@ export async function writeSignals() {
       const data = await Deno.readFile(seriesPath(dirEntry.name));
       const fileContent = textDecoder.decode(data);
       const candles: DailyCandle[] = JSON.parse(fileContent);
-  
-      writeSignalsToSeries(candles)
+
+      writeSignalsToSeries(candles);
       console.log(`Finished Writing Signals for ${dirEntry.name}`);
     } catch (e) {
       console.log("Error reading series or writing signals", e);
     }
   }
 }
-
-
 
 const insertSignal = db.prepare(
   "INSERT INTO signals_alpaca (symbol, date, open, stop) VALUES (?, ?, ?, ?)",
@@ -116,7 +115,6 @@ function writeSignalsToSeries(candles: DailyCandle[]) {
           const stop = Number(redCandle.l);
           try {
             insertSignal.run(candle.symbol, candle.date, open, stop);
-
           } catch (e) {
             console.log("DB Error: searchys", e);
           }

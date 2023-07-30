@@ -2,7 +2,10 @@ export class ServerResponse extends Response {
   constructor(body?: BodyInit | null, init?: ResponseInit) {
     super(body, init);
     this.headers.set("Content-Type", "application/json");
-    this.headers.set("Access-Control-Allow-Origin", Deno.env.get("PROD_FRONTEND_ORIGIN") ?? "*");
+    this.headers.set(
+      "Access-Control-Allow-Origin",
+      Deno.env.get("PROD_FRONTEND_ORIGIN") ?? "*",
+    );
   }
 }
 
@@ -72,7 +75,7 @@ export class Server {
 
   post(
     path: string,
-    handler: Route["handler"]
+    handler: Route["handler"],
   ) {
     this.routes["POST"].push({
       method: "POST",
@@ -101,7 +104,12 @@ export class Server {
   #rootHandler() {
     return async (req: Request) => {
       if (req.method.toUpperCase() === "HEAD") return new ServerResponse(null);
-      if (req.method.toUpperCase() === "OPTIONS") return new ServerResponse(null, { status: 204, headers: { "Allow": "OPTIONS, GET, HEAD, POST" }});
+      if (req.method.toUpperCase() === "OPTIONS") {
+        return new ServerResponse(null, {
+          status: 204,
+          headers: { "Allow": "OPTIONS, GET, HEAD, POST" },
+        });
+      }
 
       // run middleware
       const middlewareReqContext = this.#withContext(

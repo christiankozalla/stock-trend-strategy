@@ -1,11 +1,11 @@
 import { join } from "std/path/mod.ts";
-import { ServerResponse, type RequestWithContext } from "./server.ts";
+import { type RequestWithContext, ServerResponse } from "./server.ts";
 
 const textDecoder = new TextDecoder("utf-8");
 
 const path = "/api/symbols/:symbol";
 
-const __dirname = new URL('.', import.meta.url).pathname;
+const __dirname = new URL(".", import.meta.url).pathname;
 
 async function GET(
   req: RequestWithContext,

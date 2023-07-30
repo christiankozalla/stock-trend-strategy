@@ -1,6 +1,4 @@
-import {
-  encode as encodeBase64,
-} from "std/encoding/base64.ts";
+import { encode as encodeBase64 } from "std/encoding/base64.ts";
 
 const barsExample = {
   "bars": [{

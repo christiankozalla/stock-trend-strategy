@@ -45,9 +45,9 @@ export function ServerAuth(config: ServerAuthConfig) {
       Deno.env.get("DENO_ENV") !== "production"
   );
   const handler = AuthHandler(prefix, authOptions);
-  return async function(request: Request) {
+  return async function (request: Request) {
     return await handler(request);
-  }
+  };
 }
 
 export type GetSessionResult = Promise<Session | null>;

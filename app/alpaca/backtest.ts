@@ -203,7 +203,7 @@ class OrderPosition {
   } else if (args.includes("--all-symbols")) {
     // node -r @swc-node/register alphavantage/backtest.ts --all-symbols
     for await (const dirEntry of Deno.readDir(seriesPath())) {
-    if (!dirEntry.isFile) continue;
+      if (!dirEntry.isFile) continue;
 
       const symbol = dirEntry.name.replace(".json", "");
 

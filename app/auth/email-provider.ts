@@ -1,17 +1,20 @@
 import { SendEmailCommand, SESv2Client } from "npm:@aws-sdk/client-sesv2";
-import { type SendVerificationRequestParams, type EmailConfig } from "npm:@auth/core/providers";
+import {
+  type EmailConfig,
+  type SendVerificationRequestParams,
+} from "npm:@auth/core/providers";
 
 type Theme = { brandColor?: string; buttonText?: string };
 
 function emailProviderFactory(config: EmailConfig): EmailConfig {
   return {
-      id: "email",
-      type: "email",
-      name: "Email",
-      from: "Auth.js <no-reply@authjs.dev>",
-      maxAge: 24 * 60 * 60,
-      // @ts-expect-error - Copied from npm:@auth/core/providers/email.js because it would require nodemailer, but we want to use npm:@aws-sdk/client-sesv2
-      options: config,
+    id: "email",
+    type: "email",
+    name: "Email",
+    from: "Auth.js <no-reply@authjs.dev>",
+    maxAge: 24 * 60 * 60,
+    // @ts-expect-error - Copied from npm:@auth/core/providers/email.js because it would require nodemailer, but we want to use npm:@aws-sdk/client-sesv2
+    options: config,
   };
 }
 
@@ -26,7 +29,7 @@ export const emailProvider = emailProviderFactory({
 });
 
 async function sendVerificationRequest(
-  params: SendVerificationRequestParams
+  params: SendVerificationRequestParams,
 ) {
   const { identifier, url, provider, theme } = params;
   const { host } = new URL(url);

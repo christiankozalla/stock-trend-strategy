@@ -21,10 +21,7 @@ const authConfig: ServerAuthConfig = {
   },
   adapter: dynamodbAdapter,
   providers: [
-    emailProvider({
-      server: Deno.env.get("EMAIL_SERVER"),
-      from: Deno.env.get("EMAIL_FROM"),
-    }),
+    emailProvider,
     //     Providers.GitHub({
     //       clientId: Deno.env.get("GITHUB_ID"),
     //       clientSecret: Deno.env.get("GITHUB_SECRET"),

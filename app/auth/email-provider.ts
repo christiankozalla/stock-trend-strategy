@@ -1,19 +1,30 @@
 import { SendEmailCommand, SESv2Client } from "npm:@aws-sdk/client-sesv2";
-import { type SendVerificationRequestParams, type EmailConfig, type EmailProvider } from "npm:@auth/core/0.9.0/providers";
+import { type SendVerificationRequestParams, type EmailConfig } from "npm:@auth/core/providers";
 
 type Theme = { brandColor?: string; buttonText?: string };
 
-export const emailProvider: EmailProvider = (config: EmailConfig) => {
+function emailProviderFactory(config: EmailConfig): EmailConfig {
   return {
       id: "email",
       type: "email",
       name: "Email",
       from: "Auth.js <no-reply@authjs.dev>",
       maxAge: 24 * 60 * 60,
-      sendVerificationRequest,
+      // @ts-expect-error - Copied from npm:@auth/core/providers/email.js because it would require nodemailer, but we want to use npm:@aws-sdk/client-sesv2
       options: config,
   };
 }
+
+export const emailProvider = emailProviderFactory({
+  server: Deno.env.get("EMAIL_SERVER"),
+  from: Deno.env.get("EMAIL_FROM"),
+  id: "email",
+  type: "email",
+  name: "Email",
+  maxAge: 24 * 60 * 60,
+  sendVerificationRequest,
+});
+
 async function sendVerificationRequest(
   params: SendVerificationRequestParams
 ) {

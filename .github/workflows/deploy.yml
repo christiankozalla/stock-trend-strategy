@@ -1,0 +1,117 @@
+name: Deploy Deno App and React Frontend
+
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+env:
+  FRONTEND_SRC_PATH: "./frontend"
+  BACKEND_SRC_PATH: "./app"
+  SERVER_PORT: 4004
+
+jobs:
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Detect package manager
+        id: detect-package-manager
+        run: |
+          if [ -f "${{ github.workspace }}/${{ env.FRONTEND_SRC_PATH }}/yarn.lock" ]; then
+            echo "manager=yarn" >> $GITHUB_OUTPUT
+            echo "command=install" >> $GITHUB_OUTPUT
+            echo "runner=yarn" >> $GITHUB_OUTPUT
+            exit 0
+          elif [ -f "${{ github.workspace }}/${{ env.FRONTEND_SRC_PATH }}/package.json" ]; then
+            echo "manager=npm" >> $GITHUB_OUTPUT
+            echo "command=ci" >> $GITHUB_OUTPUT
+            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "Unable to determine packager manager"
+            exit 1
+          fi
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          cache-dependency-path: ${{ env.FRONTEND_SRC_PATH }}/package-lock.json
+      - name: Install dependencies
+        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+        working-directory: ${{ env.FRONTEND_SRC_PATH }}
+      - name: Build with Vite
+        run: ${{ steps.detect-package-manager.outputs.manager }} run build ## run build script configured in package.json
+        working-directory: ${{ env.FRONTEND_SRC_PATH }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-dist
+          path: ${{ env.FRONTEND_SRC_PATH }}/dist
+  
+  build-backend:
+    name: Build Deno App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: "~1.35"
+      - name: Compile
+        run: deno compile -A --unstable --output compiled-backend main.ts # needs adjacend .env file and data directory
+        working-directory: ${{ env.BACKEND_SRC_PATH }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-dist
+          path: ${{ env.BACKEND_SRC_PATH }}/compiled-backend
+
+  deploy:
+    needs: [build-frontend, build-backend]
+    runs-on: ubuntu-latest
+    name: Deploy to VPS
+    steps:
+      - name: Download from build jobs
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts
+            
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ./artifacts
+
+      # - name: Upload to VPS
+      #   id: deployment
+      #   # directory in the server /var/www/sites/<GH_USER_NAME>/<REPO_NAME>/production
+      #   working-directory: ./artifacts
+      #   shell: bash
+      #   run: |
+      #     which ssh-agent || ( apt-get install -qq openssh-client )
+      #     eval $(ssh-agent -s)
+      #     mkdir -p ~/.ssh
+      #     ssh-add <(echo "${{ secrets.GH_DEPLOY_KEY }}")
+      #     echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+      #     rsync --recursive --delete --verbose ./artifacts/frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
+      #     rsync --verbose ./artifacts/compiled-backend ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app/new-compiled-backend
+      #     ssh ${{ secrets.VPS_HOST }} kill $(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)
+      #     ssh ${{ secrets.VPS_HOST }} mv -f /var/www/sites/${{ github.repository }}/production/app/new-compiled-backend /var/www/sites/${{ github.repository }}/production/app/compiled-backend
+      #     ssh ${{ secrets.VPS_HOST }} /var/www/sites/${{ github.repository }}/production/app/compiled-backend

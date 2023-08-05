@@ -23,6 +23,10 @@ env:
   FRONTEND_SRC_PATH: "./frontend"
   BACKEND_SRC_PATH: "./app"
   SERVER_PORT: 4004
+  DYNAMODB_AWS_REGION: eu-central-1
+  EMAIL_SERVER: email-smtp.eu-central-1.amazonaws.com:465
+  EMAIL_FROM: me@christiankozalla.com
+  PROD_FRONTEND_ORIGIN: null
 
 jobs:
   build-frontend:

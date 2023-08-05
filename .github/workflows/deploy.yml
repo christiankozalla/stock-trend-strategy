@@ -79,7 +79,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: "~1.35"
+          deno-version: "~1.36"
       - name: Compile
         run: deno compile -A --unstable --output compiled-backend main.ts # needs adjacend .env file and data directory
         working-directory: ${{ env.BACKEND_SRC_PATH }}

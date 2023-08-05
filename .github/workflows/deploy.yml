@@ -103,19 +103,19 @@ jobs:
         run: ls -R
         working-directory: ./artifacts
 
-      # - name: Upload to VPS
-      #   id: deployment
-      #   # directory in the server /var/www/sites/<GH_USER_NAME>/<REPO_NAME>/production
-      #   working-directory: ./artifacts
-      #   shell: bash
-      #   run: |
-      #     which ssh-agent || ( apt-get install -qq openssh-client )
-      #     eval $(ssh-agent -s)
-      #     mkdir -p ~/.ssh
-      #     ssh-add <(echo "${{ secrets.GH_DEPLOY_KEY }}")
-      #     echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-      #     rsync --recursive --delete --verbose ./artifacts/frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
-      #     rsync --verbose ./artifacts/compiled-backend ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app/new-compiled-backend
-      #     ssh ${{ secrets.VPS_HOST }} kill $(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)
-      #     ssh ${{ secrets.VPS_HOST }} mv -f /var/www/sites/${{ github.repository }}/production/app/new-compiled-backend /var/www/sites/${{ github.repository }}/production/app/compiled-backend
-      #     ssh ${{ secrets.VPS_HOST }} /var/www/sites/${{ github.repository }}/production/app/compiled-backend
+      - name: Upload to VPS
+        id: deployment
+        # directory in the server /var/www/sites/<GH_USER_NAME>/<REPO_NAME>/production
+        working-directory: ./artifacts
+        shell: bash
+        run: |
+          which ssh-agent || ( apt-get install -qq openssh-client )
+          eval $(ssh-agent -s)
+          mkdir -p ~/.ssh
+          ssh-add <(echo "${{ secrets.GH_DEPLOY_KEY }}")
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+          rsync --recursive --delete --verbose ./artifacts/frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
+          rsync --verbose ./artifacts/backend-dist/compiled-backend ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app/new-compiled-backend
+          ssh ${{ secrets.VPS_HOST }} kill $(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)
+          ssh ${{ secrets.VPS_HOST }} mv -f /var/www/sites/${{ github.repository }}/production/app/new-compiled-backend /var/www/sites/${{ github.repository }}/production/app/compiled-backend
+          ssh ${{ secrets.VPS_HOST }} /var/www/sites/${{ github.repository }}/production/app/compiled-backend

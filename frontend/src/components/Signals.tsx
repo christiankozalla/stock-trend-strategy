@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { SeriesContext } from "../context/SeriesContext.tsx";
 import { SignalsList } from "./SignalsList.tsx";
 
@@ -8,7 +8,7 @@ export function Signals() {
     return (
         <section>
             {series.symbol && <h3>Signals for {series.symbol}</h3>}
-            <SignalsList signals={series.signals} />
+            <SignalsList signals={series.signals} type="symbol" />
         </section>
     )
 }

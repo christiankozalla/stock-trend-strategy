@@ -11,7 +11,7 @@ function App() {
   const [latestSignals, setLatestSignals] = useState<Signal[]>([]);
   const handleFetchLatestSignals = async (date: string) => {
     if (!date.split("-")[0]?.startsWith("202")) return;
-    const response = await fetch(`http://localhost:3000/api/signals?date=${date}`);
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signals?date=${date}`);
     if (response.status === 400) {
       return;
     } else if (response.status === 404) {

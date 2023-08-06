@@ -13,7 +13,7 @@ export function SeriesForm() {
     if (!symbol) {
       return setError("");
     }
-    const [seriesRes, signalsRes] = await Promise.allSettled([fetch(`http://localhost:3000/api/symbols/${symbol}`), fetch(`http://localhost:3000/api/signals/${symbol}`)]);
+    const [seriesRes, signalsRes] = await Promise.allSettled([fetch(`${import.meta.env.VITE_BACKEND_URL}/api/symbols/${symbol}`), fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signals/${symbol}`)]);
 
     if (seriesRes.status === 'fulfilled') {
       if (seriesRes.value.status === 200) {

@@ -4,6 +4,7 @@
   },
   "tasks": {
     "cli:update-series-and-signals": "deno run -A --unstable cron/update-series-and-signals.ts",
+    "db:migrate-up": "deno run -A --unstable model/db.ts",
     "dev": "deno run --watch -A --unstable main.ts",
     "main": "deno run -A --unstable main.ts",
     "compile": "deno compile -A --unstable --output compiled-backend main.ts",

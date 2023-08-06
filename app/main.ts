@@ -40,6 +40,9 @@ server.post("/api/auth/*", authHandler);
 //   return next(); // new Response("From first middleware");
 // });
 
-server.listen(({ port, hostname }) =>
-  console.log(`Running on ${hostname}:${port}`)
-);
+server.listen(({ port, hostname }) => {
+  console.log(`Running on ${hostname}:${port}`);
+  if (Deno.env.get("PRODUCTION_BACKEND_URL")) {
+    console.log(`Reverse proxy routes traffic from '${Deno.env.get("PRODUCTION_BACKEND_URL")}/api/*' to '${hostname}:${port}'`);
+  }
+});

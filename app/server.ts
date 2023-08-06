@@ -58,7 +58,7 @@ export class Server {
       Number(Deno.env.get("SERVER_PORT")) || 3000;
 
     this.hostname = options?.hostname ?? "localhost";
-    this.baseUrl = `http://${this.hostname}:${this.port}`;
+    this.baseUrl = Deno.env.get("PRODUCTION_BACKEND_URL") ?? `http://${this.hostname}:${this.port}`;
   }
   get(
     path: string,

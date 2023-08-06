@@ -2,7 +2,7 @@ import { Database } from "https://deno.land/x/sqlite3@0.9.1/mod.ts";
 import { join } from "std/path/mod.ts";
 
 const __dirname = new URL(".", import.meta.url).pathname;
-const db = new Database(join(__dirname, "..", "data", "application.db"));
+const db = new Database(join(__dirname, "..", "data", "application.db"), { create: true });
 
 const runMigrations = db.transaction((migrations: string[]) => {
   for (const migration of migrations) db.exec(migration);

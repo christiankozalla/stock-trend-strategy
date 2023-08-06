@@ -27,6 +27,7 @@ env:
   EMAIL_SERVER: email-smtp.eu-central-1.amazonaws.com:465
   EMAIL_FROM: me@christiankozalla.com
   PROD_FRONTEND_ORIGIN: null
+  VITE_BACKEND_URL: https://stock-trends.christiankozalla.com
 
 jobs:
   build-frontend:
@@ -62,7 +63,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
         working-directory: ${{ env.FRONTEND_SRC_PATH }}
       - name: Build with Vite
-        run: ${{ steps.detect-package-manager.outputs.manager }} run build ## run build script configured in package.json
+        run: VITE_BACKEND_URL=${{ env.VITE_BACKEND_URL }} ${{ steps.detect-package-manager.outputs.manager }} run build ## run build script configured in package.json
         working-directory: ${{ env.FRONTEND_SRC_PATH }}
       - name: Upload artifact
         uses: actions/upload-artifact@v3

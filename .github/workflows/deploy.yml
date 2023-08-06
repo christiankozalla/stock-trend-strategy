@@ -105,5 +105,5 @@ jobs:
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
           rsync --recursive --delete --exclude='data' --exclude='.env' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
-          ssh ${{ secrets.VPS_HOST }} "kill $(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)"
+          ssh ${{ secrets.VPS_HOST }} "kill \$(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)"
           ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app && deno task main &"

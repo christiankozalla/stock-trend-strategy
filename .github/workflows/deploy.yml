@@ -26,7 +26,6 @@ env:
   DYNAMODB_AWS_REGION: eu-central-1
   EMAIL_SERVER: email-smtp.eu-central-1.amazonaws.com:465
   EMAIL_FROM: me@christiankozalla.com
-  PROD_FRONTEND_ORIGIN: null
   VITE_BACKEND_URL: https://stock-trends.christiankozalla.com
 
 jobs:
@@ -71,24 +70,17 @@ jobs:
           name: frontend-dist
           path: ${{ env.FRONTEND_SRC_PATH }}/dist
   
-  build-backend:
+  build-backend: ## Backend does not need to be built. Just upload the source code and run with `deno run` on the server
     name: Build Deno App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: "~1.36"
-      - name: Compile
-        run: deno compile -A --unstable --output compiled-backend main.ts # needs adjacend .env file and data directory
-        working-directory: ${{ env.BACKEND_SRC_PATH }}
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: backend-dist
-          path: ${{ env.BACKEND_SRC_PATH }} ## upload the source code plus the compiled output
+          path: ${{ env.BACKEND_SRC_PATH }}
 
   deploy:
     needs: [build-frontend, build-backend]
@@ -99,10 +91,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           path: ./artifacts
-            
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: ./artifacts
 
       - name: Upload to VPS
         id: deployment
@@ -116,7 +104,6 @@ jobs:
           ssh-add <(echo "${{ secrets.GH_DEPLOY_KEY }}")
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
-          rsync --recursive --delete --exclude='data' --exclude='.env' --exclude='running-compiled-backend' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
-          ssh ${{ secrets.VPS_HOST }} kill $(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)
-          ssh ${{ secrets.VPS_HOST }} mv -f /var/www/sites/${{ github.repository }}/production/app/compiled-backend /var/www/sites/${{ github.repository }}/production/app/running-compiled-backend
-          ssh ${{ secrets.VPS_HOST }} /var/www/sites/${{ github.repository }}/production/app/running-compiled-backend
+          rsync --recursive --delete --exclude='data' --exclude='.env' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
+          ssh ${{ secrets.VPS_HOST }} "kill $(lsof -i :${{ env.SERVER_PORT }} | grep LISTEN | cut -d' ' -f2)"
+          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app && deno task main &"

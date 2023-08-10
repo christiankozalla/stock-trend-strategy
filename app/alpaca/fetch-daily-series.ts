@@ -25,9 +25,11 @@ export async function fetchDailySeries() {
     console.log("Fetching symbol: ", symbol);
     const serie = await alpaca.series(symbol);
 
+    // Respect Alpacas API rate limit of 200 calls/min
+    await new Promise((resolve) => setTimeout(resolve, 330));
+
     if (typeof serie === "undefined") {
       console.log("No data for", symbol);
-      console.log("Response", serie);
       i--; // retry last symbol
       continue;
     }

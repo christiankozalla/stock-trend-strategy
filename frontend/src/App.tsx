@@ -35,7 +35,7 @@ function App() {
           <section>
           {/* Not Clean: Must be refactored */}
           <h2>Latest Signals</h2>
-          <button onClick={() => handleFetchLatestSignals("2023-08-04")}>Display Latest Signals</button>
+          <button onClick={() => handleFetchLatestSignals("2023-08-09")}>Display Latest Signals</button>
           <SignalsList signals={latestSignals} type="date" />
         </section>
         </section>

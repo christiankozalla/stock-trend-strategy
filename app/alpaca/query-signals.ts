@@ -1,9 +1,9 @@
-import { db } from "./model/db";
+import { db } from "../model/db.ts";
 
 const selectSignals = db.prepare(
   "SELECT COUNT(*) FROM signals_alpaca WHERE symbol = ?",
 );
-const args = process.argv.slice(2);
+const args = Deno.args.slice(2);
 
 // npm run cli:query-signals -- --symbols AAPL AMZN V ZS
 const endSymbolsIndex =

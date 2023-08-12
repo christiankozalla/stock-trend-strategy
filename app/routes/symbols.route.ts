@@ -30,7 +30,7 @@ async function GET(
 
 async function getSeries(symbol: string) {
   const data = await Deno.readFile(
-    join(__dirname, "data", "series", "alpaca", `${symbol}.json`),
+    join(__dirname, "..", "data", "series", "alpaca", `${symbol}.json`),
   )
     .then((data) => {
       return { status: 200, statusText: "", data: textDecoder.decode(data) };

@@ -1,4 +1,4 @@
-import { db } from "./model/db.ts";
+import { db } from "../model/db.ts";
 import { type RequestWithContext, ServerResponse } from "./server.ts";
 
 function byDateHandler(req: RequestWithContext) {

@@ -1,8 +1,9 @@
 import "std/dotenv/load.ts"; // load env vars from .env
-import { Server } from "./server.ts";
-import { getSymbol } from "./symbols.route.ts";
-import { signalsByDate, signalsBySymbol } from "./signals.route.ts";
-import { ServerAuth, type ServerAuthConfig } from "./auth.route.ts";
+import { Server } from "./routes/server.ts";
+import { getSymbol } from "./routes/symbols.route.ts";
+import { signalsByDate, signalsBySymbol } from "./routes/signals.route.ts";
+import { tradingDays } from "./routes/trading-days.route.ts";
+import { ServerAuth, type ServerAuthConfig } from "./routes/auth.route.ts";
 import { dynamodbAdapter } from "./auth/db-adapter.ts";
 import { emailProvider } from "./auth/email-provider.ts";
 
@@ -13,6 +14,8 @@ server.get(...getSymbol);
 server.get(...signalsBySymbol);
 
 server.get(...signalsByDate);
+
+server.get(...tradingDays);
 
 const authConfig: ServerAuthConfig = {
   prefix: "/api/auth",

@@ -5,9 +5,6 @@ import stockSymbols from "./symbols.json" assert { type: "json" };
 
 const __dirname = new URL(".", import.meta.url).pathname;
 
-const textDecoder = new TextDecoder("utf-8");
-const textEncoder = new TextEncoder();
-
 export async function fetchDailySeries() {
   Deno.mkdir(
     join(
@@ -38,29 +35,25 @@ export async function fetchDailySeries() {
 
     try {
       const existingSerie: Partial<DailyCandle>[] = JSON.parse(
-        textDecoder.decode(
-          await Deno.readFile(
-            join(
-              __dirname,
-              "..",
-              "data",
-              "series",
-              "alpaca",
-              `${symbol}.json`,
-            ),
+        await Deno.readTextFile(
+          join(
+            __dirname,
+            "..",
+            "data",
+            "series",
+            "alpaca",
+            `${symbol}.json`,
           ),
         ),
       );
       // add dates that did not exist before to the beginning of existing series
       existingSerie.push(
         ...dataModelConformSerie.filter((serie) =>
-          !existingSerie.find((existingSerie) =>
-            existingSerie.date === serie.date
-          )
+          !existingSerie.find((existingSerie) => existingSerie.date === serie.date)
         ),
       );
 
-      await Deno.writeFile(
+      await Deno.writeTextFile(
         join(
           __dirname,
           "..",
@@ -69,7 +62,7 @@ export async function fetchDailySeries() {
           "alpaca",
           `${symbol}.json`,
         ),
-        textEncoder.encode(JSON.stringify(existingSerie)),
+        JSON.stringify(existingSerie),
       );
     } catch (e) {
       console.log(
@@ -77,7 +70,7 @@ export async function fetchDailySeries() {
         symbol + ".json",
       );
       console.error(e);
-      await Deno.writeFile(
+      await Deno.writeTextFile(
         join(
           __dirname,
           "..",
@@ -86,7 +79,7 @@ export async function fetchDailySeries() {
           "alpaca",
           `${symbol}.json`,
         ),
-        textEncoder.encode(JSON.stringify(dataModelConformSerie)),
+        JSON.stringify(dataModelConformSerie),
       );
     }
   }

@@ -8,9 +8,7 @@ import { join } from "std/path/mod.ts";
 // 3. Get first signal, submit a virtual "Order", see if the order gets filled withing 3 days
 
 const __dirname = new URL(".", import.meta.url).pathname;
-const seriesPath = (fileOrPath = "") =>
-  join(__dirname, "data", "series", "alpaca", fileOrPath);
-const textDecoder = new TextDecoder("utf-8");
+const seriesPath = (fileOrPath = "") => join(__dirname, "data", "series", "alpaca", fileOrPath);
 
 interface BacktestStatement {
   run(
@@ -44,9 +42,7 @@ class OrderPosition {
       Math.abs(signal.open - signal.stop) / riskRewardRatio;
 
     if (
-      this.series.findIndex((dailyCandle) =>
-        dailyCandle.date === this.signal.date
-      ) === -1
+      this.series.findIndex((dailyCandle) => dailyCandle.date === this.signal.date) === -1
     ) {
       throw new Error(`Signal has not matching start date ${this.signal.date}`);
     }
@@ -69,9 +65,7 @@ class OrderPosition {
 
   backtest(): void {
     const startIndex =
-      this.series.findIndex((dailyCandle) =>
-        dailyCandle.date === this.signal.date
-      ) - 1;
+      this.series.findIndex((dailyCandle) => dailyCandle.date === this.signal.date) - 1;
     for (
       let i = startIndex;
       i >= 0;
@@ -80,9 +74,7 @@ class OrderPosition {
       if (this.status === "cancelled") {
         console.log(
           `Order has been cancelled after ${
-            this.series.findIndex((dailyCandle) =>
-              dailyCandle.date === this.signal.date
-            ) - i
+            this.series.findIndex((dailyCandle) => dailyCandle.date === this.signal.date) - i
           } trading days.`,
           this.signal,
         );
@@ -91,9 +83,7 @@ class OrderPosition {
       if (this.status === "open") {
         if (Math.abs(startIndex - i) > 4) {
           console.log(
-            `Cancelling the order ${this.signal.symbol} on day ${
-              this.series[i].date
-            }`,
+            `Cancelling the order ${this.signal.symbol} on day ${this.series[i].date}`,
             this.signal,
           );
           this.status = "cancelled";
@@ -186,16 +176,14 @@ class OrderPosition {
 
     const symbol = args[symbolIndex + 1].toUpperCase();
     const signals = selectSignals.all(symbol) as Signal[];
-    const data = await Deno.readFile(seriesPath(`${symbol}.json`)).catch(() => {
-      console.log("No series data for ", symbol);
-      Deno.exit(1);
-    });
-    const fileContent = textDecoder.decode(data);
+    const fileContent = await Deno.readTextFile(seriesPath(`${symbol}.json`))
+      .catch(() => {
+        console.log("No series data for ", symbol);
+        Deno.exit(1);
+      });
     const series: DailyCandle[] = JSON.parse(fileContent);
     const riskReward = 1 / 2;
-    const orderPositions = signals.map((signal) =>
-      new OrderPosition(signal, riskReward, series)
-    );
+    const orderPositions = signals.map((signal) => new OrderPosition(signal, riskReward, series));
     for (const orderPosition of orderPositions) {
       orderPosition.backtest();
       orderPosition.writeBacktestToDb(writeBacktest);
@@ -210,8 +198,7 @@ class OrderPosition {
       try {
         console.log("Backtesting...", dirEntry.name);
         const signals = selectSignals.all(symbol) as Signal[];
-        const data = await Deno.readFile(seriesPath(dirEntry.name));
-        const fileContent = textDecoder.decode(data);
+        const fileContent = await Deno.readTextFile(seriesPath(dirEntry.name));
         const series: DailyCandle[] = JSON.parse(fileContent);
 
         const riskReward = 1 / 2;

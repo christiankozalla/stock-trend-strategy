@@ -1,8 +1,6 @@
 import { join } from "std/path/mod.ts";
 import { type RequestWithContext, ServerResponse } from "./server.ts";
 
-const textDecoder = new TextDecoder("utf-8");
-
 const path = "/api/symbols/:symbol";
 
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -29,11 +27,11 @@ async function GET(
 }
 
 async function getSeries(symbol: string) {
-  const data = await Deno.readFile(
+  const data = await Deno.readTextFile(
     join(__dirname, "..", "data", "series", "alpaca", `${symbol}.json`),
   )
     .then((data) => {
-      return { status: 200, statusText: "", data: textDecoder.decode(data) };
+      return { status: 200, statusText: "", data };
     }).catch((e) => {
       if (typeof e.code === "string" && e.code === "ENOENT") {
         return {

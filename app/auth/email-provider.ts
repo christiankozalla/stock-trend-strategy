@@ -1,8 +1,5 @@
 import { SendEmailCommand, SESv2Client } from "npm:@aws-sdk/client-sesv2";
-import {
-  type EmailConfig,
-  type SendVerificationRequestParams,
-} from "npm:@auth/core/providers";
+import { type EmailConfig, type SendVerificationRequestParams } from "npm:@auth/core/providers";
 
 type Theme = { brandColor?: string; buttonText?: string };
 

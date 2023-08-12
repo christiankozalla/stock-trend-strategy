@@ -13,8 +13,6 @@ function isObject(something: unknown): something is object {
 const __dirname = new URL(".", import.meta.url).pathname;
 const seriesPath = (fileOrPath = "") =>
   join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
-const textDecoder = new TextDecoder("utf-8");
-const textEncoder = new TextEncoder();
 /**
  * addEma takes in an array of closing prices { c: number } and mutates the input array!
  * @param input: The array of candles to which the EMA will be added
@@ -111,11 +109,7 @@ const addElderColorToSeries = (
         candles[i].ema[13] < candles[i - 1].ema[13];
 
       // mutate candles array
-      (candles as DailyCandle[])[i].elder = elderBullish
-        ? "green"
-        : elderBearish
-        ? "red"
-        : "blue";
+      (candles as DailyCandle[])[i].elder = elderBullish ? "green" : elderBearish ? "red" : "blue";
     } catch (e) {
       console.error("Error addElderColor: ", e);
     }
@@ -128,15 +122,14 @@ export async function addElderColor() {
     if (!dirEntry.isFile) continue;
     try {
       console.log("Adding Elder Color to", dirEntry.name);
-      const data = await Deno.readFile(seriesPath(dirEntry.name));
-      const fileContent = textDecoder.decode(data);
+      const fileContent = await Deno.readTextFile(seriesPath(dirEntry.name));
       const withElder = addElderColorToSeries(
         JSON.parse(fileContent),
       );
 
-      await Deno.writeFile(
+      await Deno.writeTextFile(
         seriesPath(dirEntry.name),
-        textEncoder.encode(JSON.stringify(withElder)),
+        JSON.stringify(withElder),
       );
     } catch (e) {
       console.error("Error Adding Elder Color", e);

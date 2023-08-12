@@ -58,7 +58,8 @@ export class Server {
       Number(Deno.env.get("SERVER_PORT")) || 3000;
 
     this.hostname = options?.hostname ?? "localhost";
-    this.baseUrl = Deno.env.get("PRODUCTION_BACKEND_URL") ?? `http://${this.hostname}:${this.port}`;
+    this.baseUrl = Deno.env.get("PRODUCTION_BACKEND_URL") ??
+      `http://${this.hostname}:${this.port}`;
   }
   get(
     path: string,
@@ -128,8 +129,7 @@ export class Server {
       // run a matching route handler
       let route: Route | undefined;
       let match: URLPatternResult | undefined | null;
-      const matchingRoutes =
-        this.routes[req.method.toUpperCase() as Route["method"]] ?? [];
+      const matchingRoutes = this.routes[req.method.toUpperCase() as Route["method"]] ?? [];
 
       for (let i = 0; i < matchingRoutes.length; i++) {
         if (

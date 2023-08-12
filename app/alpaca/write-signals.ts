@@ -70,7 +70,6 @@ import { type DailyCandle } from "./transformation.ts";
 // Keep track of red DailyCanle and wait for next green DailyCandle
 // Condition: red(low) < green(low)
 // Match a Signal and write it to DB
-const textDecoder = new TextDecoder("utf-8");
 const __dirname = new URL(".", import.meta.url).pathname;
 const seriesPath = (fileOrPath = "") =>
   join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
@@ -81,8 +80,7 @@ export async function writeSignals() {
     if (!dirEntry.isFile) continue;
     try {
       console.log("Adding Elder Color to", dirEntry.name);
-      const data = await Deno.readFile(seriesPath(dirEntry.name));
-      const fileContent = textDecoder.decode(data);
+      const fileContent = await Deno.readTextFile(seriesPath(dirEntry.name));
       const candles: DailyCandle[] = JSON.parse(fileContent);
 
       writeSignalsToSeries(candles);

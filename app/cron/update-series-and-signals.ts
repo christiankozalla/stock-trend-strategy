@@ -4,10 +4,10 @@ import { writeTradingDays } from "../alpaca/write-trading-days.ts";
 import { addElderColor } from "../alpaca/add-elder-color.ts";
 import { writeSignals } from "../alpaca/write-signals.ts";
 
-// await fetchDailySeries();
+await fetchDailySeries();
 
 await writeTradingDays();
 
-// await addElderColor();
+await addElderColor();
 
-// await writeSignals();
+await writeSignals();

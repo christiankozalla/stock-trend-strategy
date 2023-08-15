@@ -45,7 +45,6 @@ interface ServerOptions {
 export class Server {
   port: number;
   hostname: string;
-  baseUrl: string;
   routes: Record<Route["method"], Route[]> = {
     "GET": [],
     "POST": [],
@@ -53,13 +52,12 @@ export class Server {
     "DELETE": [],
   };
   middleware: Middleware[] = [];
+
   constructor(options?: ServerOptions) {
     this.port = options?.port ||
       Number(Deno.env.get("SERVER_PORT")) || 3000;
 
     this.hostname = options?.hostname ?? "localhost";
-    this.baseUrl = Deno.env.get("PRODUCTION_BACKEND_URL") ??
-      `http://${this.hostname}:${this.port}`;
   }
   get(
     path: string,
@@ -97,9 +95,8 @@ export class Server {
   #urlPattern(path: string) {
     return new URLPattern({
       pathname: path,
-      baseURL: this.baseUrl,
       search: "*",
-    }); // new URLPattern(path, this.baseUrl); //
+    });
   }
 
   #rootHandler() {

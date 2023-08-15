@@ -45,11 +45,4 @@ server.post("/api/auth/*", authHandler);
 
 server.listen(({ port, hostname }) => {
   console.log(`Running on ${hostname}:${port}`);
-  if (Deno.env.get("PRODUCTION_BACKEND_URL")) {
-    console.log(
-      `Reverse proxy routes traffic from '${
-        Deno.env.get("PRODUCTION_BACKEND_URL")
-      }/api/*' to '${hostname}:${port}'`,
-    );
-  }
 });

@@ -6,10 +6,12 @@ import { Signals } from "./components/Signals";
 import styles from "./App.module.css";
 import { SignalsList } from "./components/SignalsList";
 import { type Signal } from "../../app/model/types";
+import { useTradingDays } from "./lib/hooks/useTradingDays";
 
 function App() {
+  const tradingDays = useTradingDays();
   const [latestSignals, setLatestSignals] = useState<Signal[]>([]);
-  const handleFetchLatestSignals = async (date: string) => {
+  const handleFetchSignals = async (date: string) => {
     if (!date.split("-")[0]?.startsWith("202")) return;
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signals?date=${date}`);
     if (response.status === 400) {
@@ -35,7 +37,8 @@ function App() {
           <section>
           {/* Not Clean: Must be refactored */}
           <h2>Latest Signals</h2>
-          <button onClick={() => handleFetchLatestSignals("2023-08-09")}>Display Latest Signals</button>
+          <pre>{JSON.stringify(tradingDays.latest, null, 2)}</pre>
+          <button onClick={() => handleFetchSignals(tradingDays.latest)}>Display Latest Signals</button>
           <SignalsList signals={latestSignals} type="date" />
         </section>
         </section>

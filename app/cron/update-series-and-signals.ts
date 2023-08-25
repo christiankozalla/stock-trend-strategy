@@ -11,3 +11,5 @@ await writeTradingDays();
 await addElderColor();
 
 await writeSignals();
+
+console.log(new Date(), "Sucessfully updated series and signals");

@@ -62,17 +62,18 @@ Anzahl der Aktien im Signal: V
 V = P \ *Risk / 100 /  Max-Drawdown = P * Risk / ( 100 * ( SOP - SSP ) )
 */
 
-import { db } from "../model/db.ts";
-import { join } from "std/path/mod.ts";
+import { db } from "../db.ts";
 import { type DailyCandle } from "./transformation.ts";
+import { seriesPath } from "./utils.ts";
 
 // Loop over all DailyCandles from oldest to latest
 // Keep track of red DailyCanle and wait for next green DailyCandle
 // Condition: red(low) < green(low)
 // Match a Signal and write it to DB
-const __dirname = new URL(".", import.meta.url).pathname;
-const seriesPath = (fileOrPath = "") =>
-  join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
+
+// const __dirname = new URL(".", import.meta.url).pathname;
+// const seriesPath = (fileOrPath = "") =>
+//   join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
 globalThis.addEventListener("beforeunload", () => db.close());
 
 export async function writeSignals() {

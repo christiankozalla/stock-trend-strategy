@@ -1,11 +1,11 @@
 # Stock Trend Strategy
 
-Part 1: Deno Server in `./app`
+Part 1: Deno Worker + FastAPI Application in `./app`
 
-- Fetches daily stock data from Alpaca
+- Deno Worker fetches daily stock data from Alpaca
 - Calculates signals based on Elder Force Indicator
 - Can run backtests on signals
-- Exposes stock data (series) and signals as JSON via a REST API
+- FastAPI exposes stock data (series) and signals as JSON via a REST API
 - Authentication & Authorization
 
 Part 2: React Frontend in `./frontend`

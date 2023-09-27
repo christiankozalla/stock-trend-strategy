@@ -1,5 +1,5 @@
 import { type DailyCandle } from "./transformation.ts";
-import { join } from "std/path/mod.ts";
+import { seriesPath } from "./utils.ts";
 
 function sum(...summands: number[]) {
   return summands.reduce((sum, summand) => sum + Math.abs(summand), 0);
@@ -10,9 +10,6 @@ function isObject(something: unknown): something is object {
     something !== null;
 }
 
-const __dirname = new URL(".", import.meta.url).pathname;
-const seriesPath = (fileOrPath = "") =>
-  join(__dirname, "..", "data", "series", "alpaca", fileOrPath);
 /**
  * addEma takes in an array of closing prices { c: number } and mutates the input array!
  * @param input: The array of candles to which the EMA will be added

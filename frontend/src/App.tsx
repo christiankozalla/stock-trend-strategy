@@ -11,8 +11,8 @@ import { useTradingDays } from "./lib/hooks/useTradingDays";
 function App() {
   const tradingDays = useTradingDays();
   const [latestSignals, setLatestSignals] = useState<Signal[]>([]);
-  const handleFetchSignals = async (date: string) => {
-    if (!date.split("-")[0]?.startsWith("202")) return;
+  const handleFetchSignals = async (date?: string) => {
+    if (typeof date !== "string" || !date.split("-")[0]?.startsWith("202")) return;
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signals?date=${date}`);
     if (response.status === 400) {
       return;

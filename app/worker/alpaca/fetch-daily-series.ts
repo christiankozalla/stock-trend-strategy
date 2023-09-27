@@ -1,19 +1,11 @@
 import { alpaca } from "./client.ts";
-import { join } from "std/path/mod.ts";
 import { type DailyCandle, transform } from "./transformation.ts";
 import stockSymbols from "./symbols.json" assert { type: "json" };
-
-const __dirname = new URL(".", import.meta.url).pathname;
+import { seriesPath } from "./utils.ts";
 
 export async function fetchDailySeries() {
   Deno.mkdir(
-    join(
-      __dirname,
-      "..",
-      "data",
-      "series",
-      "alpaca",
-    ),
+    seriesPath(),
     { recursive: true },
   );
 
@@ -36,14 +28,7 @@ export async function fetchDailySeries() {
     try {
       const existingSerie: Partial<DailyCandle>[] = JSON.parse(
         await Deno.readTextFile(
-          join(
-            __dirname,
-            "..",
-            "data",
-            "series",
-            "alpaca",
-            `${symbol}.json`,
-          ),
+          seriesPath(`${symbol}.json`),
         ),
       );
       // add dates that did not exist before to the beginning of existing series
@@ -54,14 +39,7 @@ export async function fetchDailySeries() {
       );
 
       await Deno.writeTextFile(
-        join(
-          __dirname,
-          "..",
-          "data",
-          "series",
-          "alpaca",
-          `${symbol}.json`,
-        ),
+        seriesPath(`${symbol}.json`),
         JSON.stringify(existingSerie),
       );
     } catch (e) {
@@ -71,14 +49,7 @@ export async function fetchDailySeries() {
       );
       console.error(e);
       await Deno.writeTextFile(
-        join(
-          __dirname,
-          "..",
-          "data",
-          "series",
-          "alpaca",
-          `${symbol}.json`,
-        ),
+        seriesPath(`${symbol}.json`),
         JSON.stringify(dataModelConformSerie),
       );
     }

@@ -1,4 +1,4 @@
-import { db } from "../model/db.ts";
+import { db } from "../db.ts";
 
 const selectSignals = db.prepare(
   "SELECT COUNT(*) FROM signals_alpaca WHERE symbol = ?",

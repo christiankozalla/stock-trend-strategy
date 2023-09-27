@@ -1,14 +1,11 @@
-import { db } from "../model/db.ts";
+import { db } from "../db.ts";
 import { type Statement } from "https://deno.land/x/sqlite3@0.9.1/mod.ts";
 import type { Signal } from "../model/types.ts";
 import { DailyCandle } from "./transformation.ts";
-import { join } from "std/path/mod.ts";
+import { seriesPath } from "./utils.ts";
 // 1. Query the DB for all signals of a given symbol
 // 2. Read series data for symbol
 // 3. Get first signal, submit a virtual "Order", see if the order gets filled withing 3 days
-
-const __dirname = new URL(".", import.meta.url).pathname;
-const seriesPath = (fileOrPath = "") => join(__dirname, "data", "series", "alpaca", fileOrPath);
 
 interface BacktestStatement {
   run(

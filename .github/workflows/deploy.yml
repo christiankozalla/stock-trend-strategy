@@ -104,6 +104,6 @@ jobs:
           ssh-add <(echo "${{ secrets.GH_DEPLOY_KEY }}")
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
-          rsync --recursive --delete --exclude='data' --exclude='.env' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
+          rsync --recursive --delete --exclude='data' --exclude='.env' --exclude='app/server/series' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
           ssh ${{ secrets.VPS_HOST }} "pm2 reload stock-trends-backend"
-          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app/server && /home/christian/.local/bin/poetry install && /home/christian/.local/bin/poetry run uvicorn main:app --host 127.0.0.1 --port 4005"
+          ssh ${{ secrets.VPS_HOST }} "pm2 reload stock-trends-fastapi-backend"

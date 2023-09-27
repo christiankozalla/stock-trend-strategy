@@ -48,7 +48,7 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-app.mount("/api/series", StaticFiles(directory="series"), name="series")
+app.mount("/api/symbols", StaticFiles(directory="series"), name="series")
 
 @app.get("/api/signals", response_model=List[Signal])
 async def get_signals_by_date(date: str):

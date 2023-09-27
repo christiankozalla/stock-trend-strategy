@@ -105,5 +105,4 @@ jobs:
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
           rsync --recursive --delete --exclude='data' --exclude='.env' --exclude='server/series' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
-          ssh ${{ secrets.VPS_HOST }} "pm2 reload stock-trends-backend"
           ssh ${{ secrets.VPS_HOST }} "pm2 reload stock-trends-fastapi-backend"

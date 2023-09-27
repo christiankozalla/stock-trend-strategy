@@ -18,7 +18,7 @@ export function SeriesChart() {
         if (chartEl.current && Array.isArray(series.data) && series.data.length > 0) {
             if (new Date(series.data[0].date) > new Date(series.data[1].date)) series.data.reverse();
 
-            const base: any[] = series.data.map((candle, i) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `fill-color: ${colorMap[candle.elder]};`]);
+            const base: any[] = series.data.map((candle) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `fill-color: ${colorMap[candle.elder]};`]);
             base.unshift(["Date", "Low", "Open", "Close", "High", { role: "style" }]);
 
             // Add "marker" for a signal

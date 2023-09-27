@@ -106,4 +106,4 @@ jobs:
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
           rsync --recursive --delete --exclude='data' --exclude='.env' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
           ssh ${{ secrets.VPS_HOST }} "pm2 reload stock-trends-backend"
-          ssh ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app/server "poetry install && poetry run uvicorn main:app --host 127.0.0.1 --port 4005"
+          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app/server && poetry install && poetry run uvicorn main:app --host 127.0.0.1 --port 4005"

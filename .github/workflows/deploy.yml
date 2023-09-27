@@ -71,7 +71,7 @@ jobs:
           path: ${{ env.FRONTEND_SRC_PATH }}/dist
   
   build-backend: ## Backend does not need to be built. Just upload the source code and run with `deno run` on the server
-    name: Build Deno App
+    name: Build Deno Worker And FastAPI App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -106,3 +106,4 @@ jobs:
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
           rsync --recursive --delete --exclude='data' --exclude='.env' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
           ssh ${{ secrets.VPS_HOST }} "pm2 reload stock-trends-backend"
+          ssh ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app/server "poetry install && poetry run uvicorn main:app --host 127.0.0.1 --port 4005"

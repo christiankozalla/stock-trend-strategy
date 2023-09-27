@@ -5,10 +5,8 @@
   "tasks": {
     "fmt": "deno fmt",
     "cli:update-series-and-signals": "deno run -A --unstable cron/update-series-and-signals.ts",
-    "db:migrate-up": "DB_MIGRATIONS=UP deno run -A --unstable model/db.ts",
-    "dev": "deno run --watch -A --unstable main.ts",
-    "main": "deno run -A --unstable main.ts",
-    "update-lock": "deno cache --lock=deno.lock --lock-write main.ts"
+    "db:migrate-up": "DB_MIGRATIONS=UP deno run -A --unstable db.ts",
+    "update-lock": "deno cache --lock=deno.lock --lock-write cron/update-series-and-signals.ts"
   },
   "fmt": {
     "lineWidth": 100,

@@ -19,9 +19,9 @@ const latestMigration = db.transaction((migrations: string[]) => {
   db.exec(latest);
 });
 
-const migrationsPath = join(__dirname, "migrations");
+const migrationsPath = join(__dirname, "..", "model", "migrations");
 
-async function readDirSync(path: string) {
+async function readDir(path: string) {
   const entries = [];
   for await (const entry of Deno.readDir(path)) {
     entries.push(entry);
@@ -29,7 +29,7 @@ async function readDirSync(path: string) {
   return entries;
 }
 
-const allMigrations = (await readDirSync(migrationsPath))
+const allMigrations = (await readDir(migrationsPath))
   .sort((a, b) => ascendingPrefix(a.name, b.name));
 
 const up = await Promise.all(

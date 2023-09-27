@@ -1,11 +1,12 @@
 from typing import List
 
-# import os
+import os
 import databases
 import sqlalchemy
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
+import json
 
 # db_username = os.getenv('POSTGRES_USER')
 # db_password = os.getenv('POSTGRES_PASSWORD')
@@ -59,3 +60,18 @@ async def get_signals_by_date(date: str):
 async def get_signals_by_symbol(symbol: str):
     query = signals_table.select().where(signals_table.c.symbol == symbol.upper())
     return await database.fetch_all(query)
+
+current_directory = os.path.dirname(os.path.realpath(__file__))
+
+file_path = os.path.join(current_directory, "../data/trading-days.json")
+
+@app.get("/api/trading-days")
+async def get_trading_days():
+    try:
+        with open(file_path, "r") as file:
+            trading_days_data = json.load(file)
+        return trading_days_data
+    except FileNotFoundError:
+        return {"error": "Trading days data not found"}
+    except Exception as e:
+        return {"error": f"An error occurred: {str(e)}"}

@@ -41,6 +41,16 @@ class Signal(BaseModel):
 
 app = FastAPI()
 
+if os.getenv("SERVER_MODE", False) == "DEVELOPMENT":
+    from fastapi.middleware.cors import CORSMiddleware
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
 @app.on_event("startup")
 async def startup():
     await database.connect()

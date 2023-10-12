@@ -6,7 +6,7 @@ Part 1: Deno Worker + FastAPI Application in `./app`
 - Calculates signals based on Elder Force Indicator
 - Can run backtests on signals
 - FastAPI exposes stock data (series) and signals as JSON via a REST API
-- Authentication & Authorization
+- (Authentication & Authorization)
 
 Part 2: React Frontend in `./frontend`
 

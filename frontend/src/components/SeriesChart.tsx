@@ -1,4 +1,3 @@
-"use client";
 import { useContext, useRef } from "react";
 import { SeriesContext } from "../context/SeriesContext.tsx";
 import { useGoogleCharts } from "../lib/hooks/useGoogleCharts.ts";
@@ -14,15 +13,13 @@ export function SeriesChart() {
     const chartEl = useRef<HTMLDivElement | null>(null);
 
     useGoogleCharts(() => {
-        console.log("using google charts", series);
         if (chartEl.current && Array.isArray(series.data) && series.data.length > 0) {
             if (new Date(series.data[0].date) > new Date(series.data[1].date)) series.data.reverse();
 
-            const base: any[] = series.data.map((candle) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `fill-color: ${colorMap[candle.elder]};`]);
+            const base: any[] = series.data.map((candle) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `fill-color: ${colorMap[candle.elder as keyof typeof colorMap]};`]);
             base.unshift(["Date", "Low", "Open", "Close", "High", { role: "style" }]);
 
             // Add "marker" for a signal
-            console.log(series.signals);
             if (Array.isArray(series.signals) && series.signals.length > 0) {
                 series.signals.forEach((signal) => {
                     const index = base.findIndex((data) => data[0] === signal.date);
@@ -34,12 +31,11 @@ export function SeriesChart() {
 
             const data = window.google.visualization.arrayToDataTable(base);
             const chart = new window.google.visualization.CandlestickChart(chartEl.current);
-            chart.draw(data, { title: series.symbol, legend: 'none', tooltip: { trigger: 'none' } });
+            chart.draw(data, { vAxis: { title: 'Price in USD' }, legend: 'none', tooltip: { trigger: 'none' } });
         }
     }, { 'packages': ['corechart'] }, [series.data]);
+
     return (
-        <div style={{ backgroundColor: "lightblue", height: "100vh" }}>
-            <div ref={chartEl} style={{ minHeight: "100%" }}></div>
-        </div>
+        <div ref={chartEl} style={{ height: "70vh" }}></div>
     );
 }

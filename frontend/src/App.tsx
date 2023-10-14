@@ -5,8 +5,9 @@ import { SeriesForm } from "./components/SeriesForm";
 import { Signals } from "./components/Signals";
 import styles from "./App.module.css";
 import { SignalsList } from "./components/SignalsList";
-import { type Signal } from "../../app/model/types";
+import { type Signal } from "./context/SeriesContext";
 import { useTradingDays } from "./lib/hooks/useTradingDays";
+import { Backtest } from "./components/Backtest";
 
 function App() {
   const tradingDays = useTradingDays();
@@ -28,6 +29,7 @@ function App() {
       <main className={styles.main}>
         <section className={styles.chart}>
           <SeriesChart />
+          <Backtest />
         </section>
         <section className={styles.sidebar}>
           <h2>Symbol Lookup</h2>

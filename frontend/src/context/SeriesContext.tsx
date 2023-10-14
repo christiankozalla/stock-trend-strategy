@@ -1,9 +1,15 @@
 import React, { Dispatch, SetStateAction, createContext, useState } from "react";
-import { type DailyCandle } from "../../../app/alpaca/transformation.ts";
-import { type Signal } from "../../../app/model/types.ts";
+import { type DailyCandle } from "../../../app/worker/alpaca/transformation.ts";
 
+export type Signal = {
+    id: number;
+    symbol: string;
+    date: string;
+    open: number;
+    stop: number;
+};
 
-type Series = { symbol: string, data: DailyCandle[], signals: Signal[] };
+export type Series = { symbol: string, data: DailyCandle[], signals: Signal[] };
 
 export const SeriesContext = createContext<{ series: Series, setSeries: Dispatch<SetStateAction<Series>> }>({
     series: { symbol: "", data: [], signals: [] },

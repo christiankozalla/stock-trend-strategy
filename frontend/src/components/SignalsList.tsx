@@ -1,4 +1,4 @@
-import type { Signal } from "../../../app/model/types.ts";
+import type { Signal } from "../context/SeriesContext";
 import styles from "./css/SignalsList.module.css"
 
 type Props = {

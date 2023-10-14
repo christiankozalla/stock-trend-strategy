@@ -31,8 +31,6 @@ export function SeriesForm() {
     } else {
       setError("Service Error. Please try again later.")
     }
-
-
   };
 
   return (

@@ -1,4 +1,3 @@
-"use client";
 import { useContext, useRef } from "react";
 import { SeriesContext } from "../context/SeriesContext.tsx";
 import { useGoogleCharts } from "../lib/hooks/useGoogleCharts.ts";
@@ -32,12 +31,11 @@ export function SeriesChart() {
 
             const data = window.google.visualization.arrayToDataTable(base);
             const chart = new window.google.visualization.CandlestickChart(chartEl.current);
-            chart.draw(data, { title: series.symbol, legend: 'none', tooltip: { trigger: 'none' } });
+            chart.draw(data, { vAxis: { title: 'Price in USD' }, legend: 'none', tooltip: { trigger: 'none' } });
         }
     }, { 'packages': ['corechart'] }, [series.data]);
+
     return (
-        <div style={{ backgroundColor: "lightblue", height: "100vh" }}>
-            <div ref={chartEl} style={{ minHeight: "100%" }}></div>
-        </div>
+        <div ref={chartEl} style={{ height: "70vh" }}></div>
     );
 }

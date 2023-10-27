@@ -43,7 +43,6 @@ class OrderPosition {
     }
 
     private triggersStop(dailyCandle: DailyCandle): boolean {
-        console.log("triggers");
         if (this.buyCandle && +new Date(dailyCandle.date) - +new Date(this.buyCandle.date) > FIVE_DAYS_THRESHOLD_MILLISECONDS) {
             return dailyCandle.l <= this.averagePrice(this.buyCandle);
         }

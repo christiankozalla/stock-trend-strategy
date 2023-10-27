@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Layout } from "./components/Layout";
-import { SeriesChart } from "./components/SeriesChart";
 import { SeriesForm } from "./components/SeriesForm";
 import { Signals } from "./components/Signals";
 import styles from "./App.module.css";
@@ -8,6 +7,7 @@ import { SignalsList } from "./components/SignalsList";
 import { type Signal } from "./context/SeriesContext";
 import { useTradingDays } from "./lib/hooks/useTradingDays";
 import { BacktestChart } from "./components/Backtest";
+import { SeriesVisxChart } from "./components/SeriesVisxChart";
 
 function App() {
   const tradingDays = useTradingDays();
@@ -28,7 +28,9 @@ function App() {
     <Layout>
       <main className={styles.main}>
         <section className={styles.chart}>
-          <SeriesChart />
+          <div className={styles.candleChart}>
+            <SeriesVisxChart width={window.innerWidth * 0.75} height={window.innerHeight * 0.7} />
+          </div>
           <BacktestChart />
         </section>
         <section className={styles.sidebar}>
@@ -37,12 +39,12 @@ function App() {
           <Signals />
 
           <section>
-          {/* Not Clean: Must be refactored */}
-          <h2>Latest Signals</h2>
-          <pre>{JSON.stringify(tradingDays.latest, null, 2)}</pre>
-          <button onClick={() => handleFetchSignals(tradingDays.latest)}>Display Latest Signals</button>
-          <SignalsList signals={latestSignals} type="date" />
-        </section>
+            {/* Not Clean: Must be refactored */}
+            <h2>Latest Signals</h2>
+            <pre>{JSON.stringify(tradingDays.latest, null, 2)}</pre>
+            <button onClick={() => handleFetchSignals(tradingDays.latest)}>Display Latest Signals</button>
+            <SignalsList signals={latestSignals} type="date" />
+          </section>
         </section>
       </main>
     </Layout>

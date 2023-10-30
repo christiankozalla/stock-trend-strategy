@@ -18,7 +18,7 @@ export function SvgCandle({ o, h, l, c, x }: SvgCandleProps) {
     return (
         <g stroke={strokeColor} strokeWidth={strokeWidth}>
             <line y1={o} y2={o} x1={x} x2={x - (0.5*strokeWidth + length)} />
-            <line x1={x} x2={x} y1={l} y2={h} />
+            <line y1={l} y2={h} x1={x} x2={x} />
             <line y1={c} y2={c} x1={x} x2={x + 0.5*strokeWidth + length} />
         </g>
     );

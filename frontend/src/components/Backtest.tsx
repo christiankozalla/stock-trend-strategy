@@ -53,7 +53,8 @@ export function BacktestChart() {
     }, { 'packages': ['corechart'] }, [series.data, orderPositions]);
 
     return (
-        <div style={{ height: "30vh" }}>
+        <div style={{ paddingLeft: "6px", paddingRight: "6px", marginTop: "12px" }}>
+            <h2>Backtest of calculated Signals</h2>
             <div style={{ display: "flex", gap: "6px" }}>
                 Current Risk-Reward-Ratio: {rRR}
                 <input type="range" min="0.1" max="1" step="0.1" value={rRR} onChange={(e) => setRRR(Number(e.target.value))} />

@@ -4,10 +4,11 @@ import { List } from "@mui/joy";
 type Props = {
     signals: Signal[];
     type: "date" | "symbol";
+    expanded: boolean;
 }
 
-export function SignalsList({ signals, type }: Props) {
-    return <List size="sm"  sx={{ fontSize: 10, overflowY: "scroll", maxHeight: 200, '&::-webkit-scrollbar': { width: "4px" }, '&::-webkit-scrollbar-thumb': { background: "grey", } }}>
+export function SignalsList({ signals, type, expanded }: Props) {
+    return <List size="sm"  sx={{ color: expanded ? "initial" : "white", fontSize: 10, overflowY: "scroll", maxHeight: 200, height: expanded ? "initial" : 0, '&::-webkit-scrollbar': { width: "4px" }, '&::-webkit-scrollbar-thumb': { background: "grey", } }}>
         {signals
             .sort((a, b) => +new Date(b.date) - +new Date(a.date))
             .map((signal) => (

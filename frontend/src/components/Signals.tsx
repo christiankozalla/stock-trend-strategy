@@ -1,18 +1,24 @@
-import { useContext, useState, type MouseEventHandler } from "react";
+import { useContext, useState, type MouseEventHandler, CSSProperties } from "react";
 import { SeriesContext } from "../context/SeriesContext.tsx";
 import { SignalsList } from "./SignalsList.tsx";
 import { Stack } from "@mui/joy";
 
+const buttonStyles: CSSProperties = { zIndex: 1, borderRadius: "50%", border: "1px solid black", cursor: "pointer", width: 16, height: 16, position: "absolute", left: -6, top: -6 };
+
 export function Signals() {
+    const innerWidth = window.innerWidth;
     const { series } = useContext(SeriesContext);
     const [mouseDown, setMouseDown] = useState(false);
-    const [position, setPosition] = useState<{ top: number, left: number }>({ top: 0, left: 0 });
+    const [expanded, setExpanded] = useState(true);
+    const [position, setPosition] = useState<{ top: number, left: number }>({ top: 48, left: innerWidth - 200 });
 
     const moveElement: MouseEventHandler<HTMLElement> = (e) => {
         if (mouseDown) {
-            setPosition({ top: e.clientY - 12, left: e.clientX - 12 });
+            setPosition({ top: e.clientY, left: e.clientX });
         }
     }
+
+    const isDesktop: boolean = innerWidth > 420;
 
     return (
         <Stack
@@ -20,15 +26,27 @@ export function Signals() {
             onMouseUp={() => setMouseDown(false)}
             sx={{ boxShadow: "lg" }}
         >
-            <div
-                onMouseDown={() => setMouseDown(true)}
-                style={{ zIndex: 1, borderRadius: "50%", border: "1px solid black", cursor: "pointer", width: 16, height: 16, position: "absolute", left: -6, top: -6 }}></div>
+            {isDesktop ? (
+                <div
+                    onMouseDown={() => setMouseDown(true)}
+                    style={buttonStyles}
+                />
+            ) : (
+                <button
+                    style={{ ...buttonStyles, backgroundColor: "white" }}
+                    onClick={() => setExpanded((prev) => !prev)}
+                >{expanded ? "X" : "I"}</button>
+            )
+            }
+
             {mouseDown && <div
                 onMouseMove={moveElement}
                 onMouseUp={() => setMouseDown(false)}
-                style={{ position: "absolute", width: "200vw", top: -100, left: -100, height: "200vh" }}></div>}
-            {series.symbol ? <h3>Signals for {series.symbol}</h3> : <h3>Choose a Symbol</h3>}
-            <SignalsList type="symbol" signals={series.signals} />
+                style={{ position: "absolute", width: "200vw", top: -100, left: -100, height: "200vh" }}
+            />
+            }
+            {series.symbol ? <h4>Signals for {series.symbol}</h4> : <h4>Choose a Symbol</h4>}
+            <SignalsList type="symbol" signals={series.signals} expanded={expanded} />
         </Stack>
     )
 }

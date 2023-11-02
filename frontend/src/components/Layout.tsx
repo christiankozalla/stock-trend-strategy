@@ -3,6 +3,7 @@ import "./css/Layout.css";
 import { Stack } from "@mui/joy";
 import { SeriesProvider } from "../context/SeriesContext.tsx";
 import { SearchSymbol } from "./SearchSymbol.tsx";
+import { Signals } from "./Signals.tsx";
 import styled from "@emotion/styled";
 
 const Header = styled.header({
@@ -25,6 +26,7 @@ export function Layout({
         </Stack>
       </Header>
       {children}
+      <Signals />
     </SeriesProvider>
   );
 }

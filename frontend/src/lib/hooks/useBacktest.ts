@@ -5,10 +5,15 @@ import { type DailyCandle } from "../../../../app/worker/alpaca/transformation";
 export function useBacktest({ series, riskRewardRatio }: { series: Series, riskRewardRatio: number }) {
     if (!series.symbol) return [];
 
-    const orderPositions = series.signals
-        .map((signal) => (new OrderPosition(signal, riskRewardRatio, series.data).backtest()));
-
-    return orderPositions;
+    try {
+        const orderPositions = series.signals
+            .map((signal) => (new OrderPosition(signal, riskRewardRatio, series.data).backtest()));
+    
+        return orderPositions;
+    } catch(e) {
+        console.error("[useBacktest] ", e);
+        return [];
+    }
 }
 
 const FIVE_DAYS_THRESHOLD_MILLISECONDS = 5 * 24 * 60 * 60 * 1000;

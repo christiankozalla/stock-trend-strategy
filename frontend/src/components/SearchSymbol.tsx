@@ -24,9 +24,10 @@ export function SearchSymbol() {
   };
 
   const filterOptions = (options: string[], { inputValue }: { inputValue: string }) => {
-    const extactMatch = options.find((o) => o === inputValue);
+    const input = inputValue.toUpperCase();
+    const extactMatch = options.find((o) => o === input);
     if (extactMatch) return [extactMatch];
-    else return options.filter((o) => o.includes(inputValue)).sort((a) => a.startsWith(inputValue) ? -1 : 1);
+    else return options.filter((o) => o.includes(input)).sort((a) => a.startsWith(input) ? -1 : 1);
   };
 
   return (

@@ -1,6 +1,6 @@
 import { Layout } from "./components/Layout";
-import { BacktestChart } from "./components/Backtest";
-import { SeriesVisxChart } from "./components/SeriesVisxChart";
+import { BacktestChart } from "./components/BacktestChart";
+import { SeriesChart } from "./components/SeriesChart";
 import styled from "@emotion/styled";
 // import { type Signal } from "./context/SeriesContext";
 // import { Signals } from "./components/Signals";
@@ -33,7 +33,7 @@ function App() {
     <Layout>
       <main>
         <ChartContainer>
-          <SeriesVisxChart width={window.innerWidth - 24} height={window.innerHeight * 0.65} />
+          <SeriesChart width={window.innerWidth - 24} height={window.innerHeight * 0.65} />
         </ChartContainer>
         <BacktestChart />
 

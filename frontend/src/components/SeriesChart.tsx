@@ -1,41 +1,62 @@
-import { useContext, useRef } from "react";
-import { SeriesContext } from "../context/SeriesContext.tsx";
-import { useGoogleCharts } from "../lib/hooks/useGoogleCharts.ts";
+import { useMemo, useContext } from 'react';
+import { SeriesContext } from "../context/SeriesContext";
+import { scaleTime, scaleLinear } from '@visx/scale';
+import { AxisBottom, AxisLeft, type TickFormatter } from '@visx/axis';
+import { extent } from '@visx/vendor/d3-array';
+import { DailyCandle } from '../../../app/worker/alpaca/transformation';
+import { SvgCandle } from './SvgCandle';
 
-const colorMap = {
-    "red": "#ff0000", // hex-code red
-    "blue": "#0000ff", // hex-code blue
-    "green": "#00ff00", // hex-code green
-} as const;
 
-export function SeriesChart() {
+type ChartProps = {
+    width: number;
+    height: number;
+    margin?: { top: number; right: number; bottom: number; left: number };
+};
+
+export function SeriesChart({
+    width,
+    height,
+    margin = { top: 0, right: 0, bottom: 40, left: 60 },
+}: ChartProps) {
+    if (width < 10) return null;
+
     const { series } = useContext(SeriesContext);
-    const chartEl = useRef<HTMLDivElement | null>(null);
 
-    useGoogleCharts(() => {
-        if (chartEl.current && Array.isArray(series.data) && series.data.length > 0) {
-            if (new Date(series.data[0].date) > new Date(series.data[1].date)) series.data.reverse();
+    // bounds
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+    const dateTickFormat: TickFormatter<Date | { valueOf(): number }> = (date) => new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(date.valueOf()));
+    const dateTickValues: Date[] = series.data.length > 0 ? [new Date(series.data[0].date), ...series.data.map((d, i) => i % 60 === 0 ? new Date(d.date) : undefined).filter(Boolean) as Date[]] : [];
 
-            const base: any[] = series.data.map((candle) => [candle.date, Number(candle.l), Number(candle.o), Number(candle.c), Number(candle.h), `fill-color: ${colorMap[candle.elder as keyof typeof colorMap]};`]);
-            base.unshift(["Date", "Low", "Open", "Close", "High", { role: "style" }]);
+    // scales
+    const dateScale = useMemo(
+        () =>
+            scaleTime({
+                range: [margin.left, innerWidth + margin.left],
+                domain: extent(series.data, (d) => new Date(d.date)) as [Date, Date],
+            }),
+        [margin, series],
+    );
+    const priceScale = useMemo(
+        () => {
+            return scaleLinear({
+                range: [height - margin.bottom, margin.top], // flipped because svg coordinates increase top to bottom
+                domain: extent(series.data, (d) => d.h) as [number, number],
+                nice: true,
+            });
+        },
+        [margin, series],
+    );
 
-            // Add "marker" for a signal
-            if (Array.isArray(series.signals) && series.signals.length > 0) {
-                series.signals.forEach((signal) => {
-                    const index = base.findIndex((data) => data[0] === signal.date);
-                    if (index > -1) {
-                        base[index][5] = base[index][5] + "stroke-width: 5; stroke-color: #000"; // marker for a signal
-                    }
-                });
-            }
-
-            const data = window.google.visualization.arrayToDataTable(base);
-            const chart = new window.google.visualization.CandlestickChart(chartEl.current);
-            chart.draw(data, { vAxis: { title: 'Price in USD' }, legend: 'none', tooltip: { trigger: 'none' } });
-        }
-    }, { 'packages': ['corechart'] }, [series.data]);
+    const scaleCandle = (d: DailyCandle) => ({ o: priceScale(d.o), h: priceScale(d.h), l: priceScale(d.l), c: priceScale(d.c), date: dateScale(new Date(d.date)) });
 
     return (
-        <div ref={chartEl} style={{ height: "70vh" }}></div>
+        <svg width={width} height={height}>
+            {series.data.map(scaleCandle).map((scaled) => (
+                <SvgCandle key={scaled.date} {...scaled} x={scaled.date} />
+            ))}
+            <AxisLeft scale={priceScale} left={margin.left} top={margin.top} orientation="left" label="Price" tickFormat={(p) => `$ ${p.valueOf().toFixed(0)}`} />
+            <AxisBottom scale={dateScale} top={innerHeight + 2*margin.top } label="Time" tickValues={dateTickValues} tickFormat={dateTickFormat} />
+        </svg>
     );
-}
+};

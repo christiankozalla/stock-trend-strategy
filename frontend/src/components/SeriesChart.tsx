@@ -2,7 +2,6 @@ import { useMemo, useContext } from 'react';
 import { SeriesContext } from "../context/SeriesContext";
 import { scaleTime, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft, type TickFormatter } from '@visx/axis';
-import { extent } from '@visx/vendor/d3-array';
 import { DailyCandle } from '../../../app/worker/alpaca/transformation';
 import { SvgCandle } from './SvgCandle';
 
@@ -30,18 +29,20 @@ export function SeriesChart({
 
     // scales
     const dateScale = useMemo(
-        () =>
-            scaleTime({
+        () =>{
+            const dates = series.data.map((candle) => +new Date(candle.date));
+            return scaleTime({
                 range: [margin.left, innerWidth + margin.left],
-                domain: extent(series.data, (d) => new Date(d.date)) as [Date, Date],
-            }),
+                domain: [new Date(Math.min(...dates)), new Date(Math.max(...dates))],
+            })},
         [margin, series],
     );
     const priceScale = useMemo(
         () => {
+            const highs = series.data.map((candle) => candle.h);
             return scaleLinear({
                 range: [height - margin.bottom, margin.top], // flipped because svg coordinates increase top to bottom
-                domain: extent(series.data, (d) => d.h) as [number, number],
+                domain: [Math.min(...highs), Math.max(...highs)],
                 nice: true,
             });
         },

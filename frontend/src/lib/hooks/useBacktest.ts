@@ -104,15 +104,15 @@ class OrderPosition {
     }
 
     private calculatePerformance(): number {
-        if (this.status === "cancelled") {
+        if (this.status === "cancelled" || this.status === "open") {
             return 0;
         }
         if (this.buyCandle) { // status "active" | "target" | "stop"
             const sellPrice = this.exitCandle ? this.averagePrice(this.exitCandle) : this.averagePrice(this.series[this.series.length - 1]);
             return sellPrice / this.averagePrice(this.buyCandle) - 1;
         }
-        console.log("status still open?", this.status);
-        return 0; // TODO: handle in first if condition with status cancelled
+        console.warn("[useBacktest] Unexpected status: ", this.status);
+        return 0;
     }
 
     private averagePrice(dailyCandle: DailyCandle): number {

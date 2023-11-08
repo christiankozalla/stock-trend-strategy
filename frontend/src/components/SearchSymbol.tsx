@@ -1,9 +1,9 @@
-import { SyntheticEvent, useContext } from "react";
+import { type CSSProperties, SyntheticEvent, useContext } from "react";
 import { SeriesContext } from "../context/SeriesContext";
 import { Autocomplete } from "@mui/joy";
 import symbols from "../../../app/worker/alpaca/symbols.json";
 
-export function SearchSymbol() {
+export function SearchSymbol({ style }: { style: CSSProperties }) {
   const { setSeries } = useContext(SeriesContext);
 
   const submitSymbol = async (_event: SyntheticEvent, symbol: string | null) => {
@@ -39,6 +39,7 @@ export function SearchSymbol() {
       size="sm"
       filterOptions={filterOptions}
       autoFocus
+      style={style}
       sx={{ maxWidth: 300 }} />
   );
 }

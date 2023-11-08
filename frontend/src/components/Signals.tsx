@@ -7,18 +7,17 @@ const buttonStyles: CSSProperties = { zIndex: 1, borderRadius: "50%", border: "1
 
 export function Signals() {
     const innerWidth = window.innerWidth;
+    const isDesktop: boolean = innerWidth > 640;
     const { series } = useContext(SeriesContext);
     const [mouseDown, setMouseDown] = useState(false);
     const [expanded, setExpanded] = useState(true);
-    const [position, setPosition] = useState<{ top: number, left: number }>({ top: 48, left: innerWidth - 200 });
+    const [position, setPosition] = useState<{ top: number, left: number }>({ top: isDesktop ? 48 : 72, left: innerWidth - 200 });
 
     const moveElement: MouseEventHandler<HTMLElement> = (e) => {
         if (mouseDown) {
             setPosition({ top: e.clientY, left: e.clientX });
         }
     }
-
-    const isDesktop: boolean = innerWidth > 420;
 
     return (
         <Stack

@@ -15,7 +15,7 @@ type Status = "open" | "active" | "cancelled" | "stop" | "target";
 
 const FIVE_TRADING_DAYS_THRESHOLD = 5
 
-class OrderPosition {
+export class OrderPosition {
     signal: Signal;
     series: DailyCandle[];
     riskRewardRatio: number;

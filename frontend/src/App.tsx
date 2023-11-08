@@ -35,7 +35,7 @@ function App() {
         <ChartContainer>
           <SeriesChart width={window.innerWidth - 24} height={window.innerHeight * 0.65} />
         </ChartContainer>
-        <BacktestChart />
+        <BacktestChart width={window.innerWidth - 24} height={window.innerHeight * 0.3} />
 
         {/* <h2>Latest Signals</h2>
           <pre>{JSON.stringify(tradingDays.latest, null, 2)}</pre>

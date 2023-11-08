@@ -1,7 +1,9 @@
-import { useContext, useState, useRef } from "react";
+import { useContext, useState, useMemo } from "react";
+import { scaleTime, scaleLinear } from "@visx/scale";
+import { AxisLeft, Axis, type TickFormatter } from "@visx/axis";
+import { Bar } from "@visx/shape";
 import { SeriesContext } from "../context/SeriesContext.tsx";
-import { useBacktest } from "../lib/hooks/useBacktest.ts";
-import { useGoogleCharts } from "../lib/hooks/useGoogleCharts.ts";
+import { useBacktest, type OrderPosition } from "../lib/hooks/useBacktest.ts";
 
 const colorMap = {
     "red": "#ff0000", // hex-code red
@@ -9,10 +11,26 @@ const colorMap = {
     "green": "#00ff00", // hex-code green
 } as const;
 
-export function BacktestChart() {
+type ChartProps = {
+    width: number;
+    height: number;
+    margin?: { top: number; right: number; bottom: number; left: number };
+};
+
+// accessors
+const performanceInPercent = (op: OrderPosition) => op?.performance ? op.performance * 100 : 0;
+
+export function BacktestChart({
+    width,
+    height,
+    margin = { top: 6, right: 0, bottom: 0, left: 60 },
+}: ChartProps) {
     const [rRR, setRRR] = useState(0.3);
     const { series } = useContext(SeriesContext);
     const orderPositions = useBacktest({ series, riskRewardRatio: rRR });
+
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
 
     function performance() {
         const overall = (orderPositions || []).reduce((acc, op) => acc + (op.performance ?? 0), 0) * 100;
@@ -25,35 +43,36 @@ export function BacktestChart() {
         }
     }
 
-    const chartEl = useRef<HTMLDivElement | null>(null);
+    const dateTickFormat: TickFormatter<Date | { valueOf(): number }> = (date) => new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(date.valueOf()));
+    const dateTickValues: Date[] = series.data.length > 0
+        ? [new Date(series.data[0].date), ...series.data.map((d, i) => i % 60 === 0 ? new Date(d.date) : undefined).filter(Boolean) as Date[]]
+        : [];
 
-    useGoogleCharts(() => {
-        if (chartEl.current && Array.isArray(series.data) && series.data.length > 0) {
-            if (new Date(series.data[0].date) > new Date(series.data[1].date)) series.data.reverse();
+    // scales
+    const dateScale = useMemo(
+        () => {
+            const dates = series.data.map((candle) => +new Date(candle.date));
+            return scaleTime({
+                range: [margin.left, innerWidth + margin.left],
+                domain: [new Date(Math.min(...dates)), new Date(Math.max(...dates))],
+            })
+        },
+        [margin, series],
+    );
 
-            const base: any[] = series.data.map((candle) => {
-                const backtestItem = orderPositions.find((op) => op.signal.date === candle.date);
-                const performance = backtestItem?.performance ? Number(backtestItem.performance) * 100 : null;
-                return [candle.date, performance, performance === null ? "" : performance > 0 ? `fill-color: ${colorMap["green"]}; stroke-width: 5; stroke-color: ${colorMap["green"]}` : `fill-color: ${colorMap["red"]}; stroke-width: 5; stroke-color: ${colorMap["red"]}`];
+    const performanceScale = useMemo(
+        () => {
+            const performances = orderPositions.map(performanceInPercent)
+            return scaleLinear({
+                range: [height - margin.bottom, margin.top], // flipped because svg coordinates increase top to bottom
+                domain: [Math.min(...performances), Math.max(...performances)],
             });
-
-            base.unshift(["Date", "Performance", { role: "style" }]);
-
-            const data = window.google.visualization.arrayToDataTable(base);
-            const chart = new window.google.visualization.ColumnChart(chartEl.current);
-            chart.draw(data, {
-                bar: {
-                    groupWidth: "50%"
-                },
-                vAxis: {
-                    title: 'Performance in %'
-                }, legend: 'none'
-            });
-        }
-    }, { 'packages': ['corechart'] }, [series.data, orderPositions]);
+        },
+        [margin, orderPositions],
+    );
 
     return (
-        <div style={{ paddingLeft: "6px", paddingRight: "6px", marginTop: "12px" }}>
+        <div style={{ padding: "12px 6px"}}>
             <h2>Backtest of calculated Signals</h2>
             <div style={{ display: "flex", gap: "6px" }}>
                 Current Risk-Reward-Ratio: {rRR}
@@ -62,7 +81,24 @@ export function BacktestChart() {
                 <span>Gains: {performance().gains.toFixed(1)} %</span>
                 <span>Losses: {performance().losses.toFixed(1)} %</span>
             </div>
-            <div ref={chartEl}></div>
+            <svg width={width} height={height}>
+                {orderPositions.map((op) => {
+                    const percent = performanceInPercent(op);
+                    const barHeight = Math.abs(performanceScale(0) - performanceScale(percent)); // Math.abs(performanceScale(14) - performanceScale(0));
+                    return (
+                        <Bar
+                            key={op.signal.id}
+                            x={dateScale(new Date(op.signal.date))}
+                            y={percent > 0 ? performanceScale(0) - barHeight : performanceScale(0)}
+                            height={barHeight}
+                            width={9}
+                            fill={percent > 0 ? colorMap.green : colorMap.red}
+                        />
+                    )
+                })}
+                <AxisLeft scale={performanceScale} left={margin.left} top={margin.top} orientation="left" label="Performance %" tickFormat={(p) => p.valueOf().toFixed(0)} />
+                <Axis scale={dateScale} top={performanceScale(0) || innerHeight} label="Time" tickValues={dateTickValues} tickFormat={dateTickFormat} />
+            </svg>
         </div>
     );
 }

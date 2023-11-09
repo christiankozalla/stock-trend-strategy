@@ -4,6 +4,7 @@ import { AxisLeft, Axis, type TickFormatter } from "@visx/axis";
 import { Bar } from "@visx/shape";
 import { SeriesContext } from "../context/SeriesContext.tsx";
 import { useBacktest, type OrderPosition } from "../lib/hooks/useBacktest.ts";
+import { mq } from "./css/breakpoints.ts";
 
 const colorMap = {
     "red": "#ff0000", // hex-code red
@@ -17,6 +18,18 @@ type ChartProps = {
     margin?: { top: number; right: number; bottom: number; left: number };
 };
 
+
+const containerStyles = {
+    ...mq({ max: "640px" })({
+        fontSize: "9px",
+        ".container h2": {
+            fontSize: "1em"
+        },
+        input: {
+            width: "64px"
+        }
+    })
+};
 // accessors
 const performanceInPercent = (op: OrderPosition) => op?.performance ? op.performance * 100 : 0;
 
@@ -72,14 +85,16 @@ export function BacktestChart({
     );
 
     return (
-        <div style={{ padding: "12px 6px"}}>
+        <div style={{ padding: "12px 6px" }} css={containerStyles}>
             <h2>Backtest of calculated Signals</h2>
-            <div style={{ display: "flex", gap: "6px" }}>
-                Current Risk-Reward-Ratio: {rRR}
+            <div className="container" style={{ display: "flex", gap: "6px" }}>
+                RRR: {rRR}
                 <input type="range" min="0.1" max="1" step="0.1" value={rRR} onChange={(e) => setRRR(Number(e.target.value))} />
-                <span>Overall: {performance().overall.toFixed(1)} %</span>
-                <span>Gains: {performance().gains.toFixed(1)} %</span>
-                <span>Losses: {performance().losses.toFixed(1)} %</span>
+                <div>
+                    <span>Overall: {performance().overall.toFixed(1)} %</span>
+                    <span>Gains: {performance().gains.toFixed(1)} %</span>
+                    <span>Losses: {performance().losses.toFixed(1)} %</span>
+                </div>
             </div>
             <svg width={width} height={height}>
                 {orderPositions.map((op) => {

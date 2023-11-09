@@ -32,11 +32,7 @@ const headerStyles = css({
 
 const buttonStyles = css({
   ...mq({ max: "640px" })({ maxWidth: "100px" }),
-  ...mq({ min: "641px" })({ marginLeft: "auto" })
 });
-
-console.log("button", buttonStyles);
-
 
 export function Layout({
   children,
@@ -48,10 +44,14 @@ export function Layout({
       <header css={headerStyles}>
         <h1>StockTrends</h1>
         <SearchSymbol style={{ gridArea: "search" }} />
-        <Button style={{ gridArea: "sign-up" }} css={buttonStyles} variant="solid">
+        <Button style={{ gridArea: "sign-up" }} css={{
+          ...buttonStyles, ...css({
+            ...mq({ min: "641px" })({ marginLeft: "auto" })
+          })
+        }} variant="solid">
           <RouterLink to="/sign-up">Sign Up</RouterLink>
         </Button>
-        <Button style={{ gridArea: "log-in" }} css={buttonStyles}  variant="outlined">
+        <Button style={{ gridArea: "log-in" }} css={buttonStyles} variant="outlined">
           <RouterLink to="/log-in">Log In</RouterLink>
         </Button>
       </header>

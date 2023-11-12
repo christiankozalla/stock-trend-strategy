@@ -1,36 +1,18 @@
-from typing import List
-
+from typing import List, Annotated
 import os
-import databases
-import sqlalchemy
-from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi.staticfiles import StaticFiles
 import json
-
-# db_username = os.getenv('POSTGRES_USER')
-# db_password = os.getenv('POSTGRES_PASSWORD')
-# db_name = os.getenv('POSTGRES_DB')
-
-# Connect to SQLite database, that the deno worker fills with Signals
-SQLITE_DB_URL = "sqlite:///../data/application.db"
-database = databases.Database(SQLITE_DB_URL)
-
-metadata = sqlalchemy.MetaData()
-
-signals_table = sqlalchemy.Table(
-    "signals_alpaca",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("symbol", sqlalchemy.String),
-    sqlalchemy.Column("date", sqlalchemy.String),
-    sqlalchemy.Column("open", sqlalchemy.Float),
-    sqlalchemy.Column("stop", sqlalchemy.Float),
+from fastapi import FastAPI, Depends
+from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
+from mod.database import database, signals_table
+from mod.authentication import (
+    User,
+    UserIn,
+    register,
+    get_current_user,
+    login_for_access_token
 )
-
-engine = sqlalchemy.create_engine(SQLITE_DB_URL,  connect_args={"check_same_thread": False})
-
-metadata.create_all(bind=engine, checkfirst=True) # does not re-create tables that already exist
 
 class Signal(BaseModel):
     id: int
@@ -85,3 +67,16 @@ async def get_trading_days():
         return {"error": "Trading days data not found"}
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
+
+
+@app.post("/token")
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    return login_for_access_token(form_data)
+
+@app.get("/users/me")
+async def read_users_me(current_user: str = Annotated[User, Depends(get_current_user)]):
+    return current_user
+
+@app.post("/register")
+def register_new_user(user_in: UserIn):
+    return register(user_in)

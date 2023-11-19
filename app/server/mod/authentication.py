@@ -1,27 +1,42 @@
+import os
+from typing import Annotated
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
-from pydantic import BaseModel, Optional
+from fastapi import Response, Depends, HTTPException, status
+from fastapi.param_functions import Form
+from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from mod.database import database
+from mod.database import postgresDatabase, users_table
+from databases import Database
+from asyncpg import UniqueViolationError
 
-SECRET_KEY = "607e19a5d5b03af5b70a0456c511badbc5e40ca69e61dac9df32df86a4e1748c"
+
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+class RegisterForm:
+    def __init__(
+        self,
+        *,
+        username: Annotated[str, Form()],
+        password: Annotated[str, Form()],
+        full_name: Annotated[str, Form()],
+        email: Annotated[str, Form()]
+    ):
+        self.username = username
+        self.password = password
+        self.full_name = full_name
+        self.email = email
+
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    username: str = None
 
 class UserIn(BaseModel):
     username: str
     password: str
-    email: str
-    full_name: str
-
-class User(BaseModel):
-    username: str
-    hashed_password: str
     email: str
     full_name: str
 
@@ -40,27 +55,29 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-async def get_user(db, username: str):
-    user = await db.query(User).filter(User.username == username).first()
-    if user:
-        del user["hashed_password"]
-        return user
-    else:
-        return False
+async def get_user(db: Database, username: str):
+    query = users_table.select().where(users_table.c.username == username)
+    user = await db.fetch_one(query)
+    return user
         
 
-async def create_user(db, user_in: UserIn):
-    hashed_password = get_password_hash(user_in.password)
-    new_user = User(username=user_in.username,
-                    full_name=user_in.full_name,
-                    email=user_in.email,
-                    hashed_password=hashed_password)
+async def create_user(db: Database, user_in: UserIn):
+    try:
+        hashed_password = get_password_hash(user_in.password)
+        query = users_table.insert().values(
+            username=user_in.username,
+            full_name=user_in.full_name,
+            email=user_in.email,
+            hashed_password=hashed_password
+        )
+        user_id = await db.execute(query)
+        return user_id
+    except Exception as e:
+        assert isinstance(e, UniqueViolationError)
+        return False
 
-    db.add(new_user)
-    await db.commit()
-    return new_user
 
-async def authenticate_user(db, username: str, password: str):
+async def authenticate_user(db: Database, username: str, password: str):
     user = await get_user(db, username)
     if not user:
         return False
@@ -68,7 +85,7 @@ async def authenticate_user(db, username: str, password: str):
         return False
     return user
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -92,31 +109,40 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = await get_user(database, username=token_data.username)
+    user = await get_user(postgresDatabase, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user
 
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await authenticate_user(database, form_data.username, form_data.password)
+def create_token_response(username: str, response: Response):
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": username}, expires_delta=access_token_expires
+    )
+    response.set_cookie(key="access_token", value=access_token, samesite="strict", httponly=True)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
+    user = await authenticate_user(postgresDatabase, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user["username"]}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    
+    return create_token_response(user["username"], response)
 
-async def register(user_in: UserIn):
-    new_user = await create_user(database, user_in)
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": new_user.username}, expires_delta=access_token_expires
-    )
+async def register(response: Response, form_data: RegisterForm = Depends()):
+    new_user_id = await create_user(postgresDatabase, UserIn(
+        username=form_data.username,
+        password=form_data.password,
+        full_name=form_data.full_name,
+        email=form_data.email
+    ))
 
-    return {"access_token": access_token, "token_type": "bearer"}
+    if new_user_id == False:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User already exists, login with your email.")
+
+    return create_token_response(form_data.username, response)

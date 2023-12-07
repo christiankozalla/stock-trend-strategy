@@ -1,36 +1,25 @@
-from typing import List
-
+from typing import List, Annotated
 import os
-import databases
-import sqlalchemy
-from fastapi import FastAPI
-from pydantic import BaseModel
-from fastapi.staticfiles import StaticFiles
 import json
-
-# db_username = os.getenv('POSTGRES_USER')
-# db_password = os.getenv('POSTGRES_PASSWORD')
-# db_name = os.getenv('POSTGRES_DB')
-
-# Connect to SQLite database, that the deno worker fills with Signals
-SQLITE_DB_URL = "sqlite:///../data/application.db"
-database = databases.Database(SQLITE_DB_URL)
-
-metadata = sqlalchemy.MetaData()
-
-signals_table = sqlalchemy.Table(
-    "signals_alpaca",
-    metadata,
-    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("symbol", sqlalchemy.String),
-    sqlalchemy.Column("date", sqlalchemy.String),
-    sqlalchemy.Column("open", sqlalchemy.Float),
-    sqlalchemy.Column("stop", sqlalchemy.Float),
+from fastapi import FastAPI, Response, Depends, status
+from fastapi.staticfiles import StaticFiles
+from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
+from mod.database import (
+    sqliteDatabase,
+    postgresDatabase,
+    create_postgres_tables,
+    create_sqlite_tables,
+    signals_table,
+    User
 )
 
-engine = sqlalchemy.create_engine(SQLITE_DB_URL,  connect_args={"check_same_thread": False})
-
-metadata.create_all(bind=engine, checkfirst=True) # does not re-create tables that already exist
+from mod.authentication import (
+    RegisterForm,
+    register,
+    get_current_user,
+    login_for_access_token
+)
 
 class Signal(BaseModel):
     id: int
@@ -53,23 +42,26 @@ if os.getenv("SERVER_MODE", False) == "DEVELOPMENT":
 
 @app.on_event("startup")
 async def startup():
-    await database.connect()
+    await sqliteDatabase.connect()
+    await postgresDatabase.connect()
+    await create_postgres_tables()
+    await create_sqlite_tables()
 
 @app.on_event("shutdown")
 async def shutdown():
-    await database.disconnect()
+    await sqliteDatabase.disconnect()
 
 app.mount("/api/symbols", StaticFiles(directory="series"), name="series")
 
 @app.get("/api/signals", response_model=List[Signal])
 async def get_signals_by_date(date: str):
     query = signals_table.select().where(signals_table.c.date == date)
-    return await database.fetch_all(query)
+    return await sqliteDatabase.fetch_all(query)
 
 @app.get("/api/signals/{symbol}", response_model=List[Signal])
 async def get_signals_by_symbol(symbol: str):
     query = signals_table.select().where(signals_table.c.symbol == symbol.upper())
-    return await database.fetch_all(query)
+    return await sqliteDatabase.fetch_all(query)
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 
@@ -85,3 +77,16 @@ async def get_trading_days():
         return {"error": "Trading days data not found"}
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
+
+
+@app.post("/token")
+async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response):
+    return await login_for_access_token(response, form_data)
+
+@app.get("/users/me")
+async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+    return current_user
+
+@app.post("/register", status_code=status.HTTP_201_CREATED)
+async def register_new_user(form_data: Annotated[RegisterForm, Depends()], response: Response):
+    return await register(response, form_data)

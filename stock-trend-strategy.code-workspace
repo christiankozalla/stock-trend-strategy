@@ -8,5 +8,10 @@
             "name": "React Frontend",
             "path": "./frontend"
         }
-    ]   
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "/home/christian/.cache/pypoetry/virtualenvs/stock-trends-server-tLYihwPT-py3.11",
+        "python.autoComplete.extraPaths": ["/home/christian/.cache/pypoetry/virtualenvs/stock-trends-server-tLYihwPT-py3.11/lib/python3.10/site-packages"],
+        "python.analysis.extraPaths": ["/home/christian/.cache/pypoetry/virtualenvs/stock-trends-server-tLYihwPT-py3.11/lib/python3.10/site-packages"]
+    }
 }

@@ -11,16 +11,18 @@ export function useBacktest({ series, riskRewardRatio }: { series: Series, riskR
     return orderPositions;
 }
 
-const FIVE_DAYS_THRESHOLD_MILLISECONDS = 5 * 24 * 60 * 60 * 1000;
+type Status = "open" | "active" | "cancelled" | "stop" | "target";
 
-class OrderPosition {
+const FIVE_TRADING_DAYS_THRESHOLD = 5
+
+export class OrderPosition {
     signal: Signal;
     series: DailyCandle[];
     riskRewardRatio: number;
-    status: "open" | "active" | "cancelled" | "stop" | "target";
+    status: Status;
     signalTarget: number;
     performance?: number;
-    buyCandle?: DailyCandle;
+    buyCandle?: DailyCandle & { index: number };
     exitCandle?: DailyCandle;
 
     constructor(signal: Signal, riskRewardRatio: number, series: DailyCandle[]) {
@@ -42,9 +44,8 @@ class OrderPosition {
         return dailyCandle.h > this.signal.open;
     }
 
-    private triggersStop(dailyCandle: DailyCandle): boolean {
-        console.log("triggers");
-        if (this.buyCandle && +new Date(dailyCandle.date) - +new Date(this.buyCandle.date) > FIVE_DAYS_THRESHOLD_MILLISECONDS) {
+    private triggersStop(dailyCandle: DailyCandle, currentIndex: number): boolean {
+        if (this.buyCandle && Math.abs(this.buyCandle.index - currentIndex) >= FIVE_TRADING_DAYS_THRESHOLD) {
             return dailyCandle.l <= this.averagePrice(this.buyCandle);
         }
         return dailyCandle.l <= this.signal.stop
@@ -64,20 +65,20 @@ class OrderPosition {
                 i++
             ) {
                 if (this.status === "open") {
-                    if (Math.abs(startIndex - i) > 4 || this.triggersStop(this.series[i])) {
+                    if (Math.abs(startIndex - i) > 4 || this.triggersStop(this.series[i], i)) {
                         this.status = "cancelled";
                         this.exitCandle = this.series[i];
                         break;
                     }
 
                     if (this.canBeFilled(this.series[i])) {
-                        this.buyCandle = this.series[i];
+                        this.buyCandle = { ...this.series[i], index: i };
                         this.status = "active";
                         continue;
                     }
                 }
                 if (this.status === "active") {
-                    if (this.triggersStop(this.series[i])) {
+                    if (this.triggersStop(this.series[i], i)) {
                         this.status = "stop";
                         this.exitCandle = this.series[i];
                         break;
@@ -103,16 +104,15 @@ class OrderPosition {
     }
 
     private calculatePerformance(): number {
-        if (this.status === "cancelled") {
+        if (this.status === "cancelled" || this.status === "open") {
             return 0;
         }
         if (this.buyCandle) { // status "active" | "target" | "stop"
             const sellPrice = this.exitCandle ? this.averagePrice(this.exitCandle) : this.averagePrice(this.series[this.series.length - 1]);
             return sellPrice / this.averagePrice(this.buyCandle) - 1;
         }
-        throw new Error(
-            `Status: ${this.status} (Error: Sollte nicht vorkommen! Status muss am Ende immer 'cancelled' 'stop' oder 'target' sein.`,
-        );
+        console.warn("[useBacktest] Unexpected status: ", this.status);
+        return 0;
     }
 
     private averagePrice(dailyCandle: DailyCandle): number {

@@ -4,7 +4,6 @@ import { Button } from "@mui/joy";
 import { Link as RouterLink } from 'react-router-dom';
 import { SeriesProvider } from "../context/SeriesContext.tsx";
 import { SearchSymbol } from "./SearchSymbol.tsx";
-import { Signals } from "./Signals.tsx";
 import { css } from "@emotion/react"
 import { mq } from "./css/breakpoints.ts"
 
@@ -56,7 +55,6 @@ export function Layout({
         </Button>
       </header>
       {children}
-      <Signals />
     </SeriesProvider>
   );
 }

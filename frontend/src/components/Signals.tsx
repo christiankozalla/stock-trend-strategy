@@ -23,7 +23,7 @@ type Props = {
   }
 
 export function Signals({ screenWidth }: Props) {
-    const tradingDays = useTradingDays();
+    const { latestTradingDay } = useTradingDays();
     const[latestSignals, setLatestSignals] = useState<Signal[]>([]);
     const isDesktop: boolean = screenWidth > 640;
     const { series } = useContext(SeriesContext);
@@ -38,8 +38,8 @@ export function Signals({ screenWidth }: Props) {
     }
 
     useEffect(() => {
-        fetchSignals(tradingDays.latest).then((data) => setLatestSignals(data));
-    }, []);
+        fetchSignals(latestTradingDay).then((data) => setLatestSignals(data));
+    }, [latestTradingDay]);
 
     return (
         <Stack

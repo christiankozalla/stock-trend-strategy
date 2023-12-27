@@ -6,6 +6,7 @@ import { SeriesProvider } from "../context/SeriesContext.tsx";
 import { SearchSymbol } from "./SearchSymbol.tsx";
 import { css } from "@emotion/react"
 import { mq } from "./css/breakpoints.ts"
+import { AuthProvider } from "../context/AuthContext.tsx";
 
 const headerStyles = css({
   display: "flex",
@@ -39,22 +40,24 @@ export function Layout({
   children: ReactNode;
 }) {
   return (
-    <SeriesProvider>
-      <header css={headerStyles}>
-        <h1>StockTrends</h1>
-        <SearchSymbol style={{ gridArea: "search" }} />
-        <Button style={{ gridArea: "sign-up" }} css={{
-          ...buttonStyles, ...css({
-            ...mq({ min: "641px" })({ marginLeft: "auto" })
-          })
-        }} variant="solid">
-          <RouterLink to="/sign-up">Sign Up</RouterLink>
-        </Button>
-        <Button style={{ gridArea: "log-in" }} css={buttonStyles} variant="outlined">
-          <RouterLink to="/log-in">Log In</RouterLink>
-        </Button>
-      </header>
-      {children}
-    </SeriesProvider>
+    <AuthProvider>
+      <SeriesProvider>
+        <header css={headerStyles}>
+          <h1>StockTrends</h1>
+          <SearchSymbol style={{ gridArea: "search" }} />
+          <Button style={{ gridArea: "sign-up" }} css={{
+            ...buttonStyles, ...css({
+              ...mq({ min: "641px" })({ marginLeft: "auto" })
+            })
+          }} variant="solid">
+            <RouterLink to="/sign-up">Sign Up</RouterLink>
+          </Button>
+          <Button style={{ gridArea: "log-in" }} css={buttonStyles} variant="outlined">
+            <RouterLink to="/log-in">Log In</RouterLink>
+          </Button>
+        </header>
+        {children}
+      </SeriesProvider>
+    </AuthProvider>
   );
 }

@@ -1,4 +1,10 @@
 {
   "deno.enable": true,
-  "deno.unstable": true
+  "deno.unstable": true,
+  "[python]": {
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.formatOnType": false,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
 }

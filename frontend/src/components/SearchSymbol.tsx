@@ -1,5 +1,6 @@
 import { type CSSProperties, SyntheticEvent, useContext } from "react";
 import { SeriesContext } from "../context/SeriesContext";
+import { useFetch } from "../lib/hooks/useFetch";
 import { Autocomplete } from "@mui/joy";
 import symbols from "../../../app/worker/alpaca/symbols.json";
 
@@ -10,15 +11,15 @@ export function SearchSymbol({ style }: { style: CSSProperties }) {
     if (!symbol) {
       return;
     }
-    const [seriesRes, signalsRes] = await Promise.allSettled([fetch(`${import.meta.env.VITE_BACKEND_URL}/api/symbols/${symbol.toUpperCase()}.json`), fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signals/${symbol}`)]);
+    const [seriesRes, signalsRes] = await Promise.allSettled([useFetch(`/api/symbols/${symbol.toUpperCase()}.json`), useFetch(`/api/signals/${symbol}`)]);
 
     if (seriesRes.status === 'fulfilled') {
-      if (seriesRes.value.status === 200) {
+      if (seriesRes.value?.status === 200) {
         const data = await seriesRes.value.json();
-        const signals = signalsRes.status === 'fulfilled' ? await signalsRes.value.json() : [];
+        const signals = signalsRes.status === 'fulfilled' ? await signalsRes.value?.json() : [];
 
         setSeries({ symbol, data, signals });
-      } else if (seriesRes.value.status === 404) {
+      } else if (seriesRes.value?.status === 404) {
       }
     }
   };

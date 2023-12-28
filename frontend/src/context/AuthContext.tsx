@@ -7,7 +7,7 @@ export type AuthInitProps = {
 
 type TokenPayload = { sub: string; exp: number };
 
-export class Auth {
+class Auth {
     accessToken?: string;
     accessTokenType?: string;
 
@@ -47,8 +47,10 @@ export class Auth {
     }
 }
 
-export const AuthContext = createContext<Auth>(new Auth());
+export const auth = new Auth();
+
+export const AuthContext = createContext<Auth>(auth);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    return <AuthContext.Provider value={new Auth()}>{children}</AuthContext.Provider>;
+    return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }

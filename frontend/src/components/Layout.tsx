@@ -1,12 +1,12 @@
-import { type ReactNode } from "react";
+import { type ReactNode, useContext } from "react";
 import "./css/Layout.css";
 import { Button } from "@mui/joy";
 import { Link as RouterLink } from 'react-router-dom';
 import { SeriesProvider } from "../context/SeriesContext.tsx";
 import { SearchSymbol } from "./SearchSymbol.tsx";
-import { css } from "@emotion/react"
-import { mq } from "./css/breakpoints.ts"
-import { AuthProvider } from "../context/AuthContext.tsx";
+import { css } from "@emotion/react";
+import { mq } from "./css/breakpoints.ts";
+import { AuthContext } from "../context/AuthContext.tsx";
 
 const headerStyles = css({
   display: "flex",
@@ -39,25 +39,31 @@ export function Layout({
 }: {
   children: ReactNode;
 }) {
+  const auth = useContext(AuthContext);
+
   return (
-    <AuthProvider>
-      <SeriesProvider>
-        <header css={headerStyles}>
-          <h1>StockTrends</h1>
-          <SearchSymbol style={{ gridArea: "search" }} />
-          <Button style={{ gridArea: "sign-up" }} css={{
-            ...buttonStyles, ...css({
-              ...mq({ min: "641px" })({ marginLeft: "auto" })
-            })
-          }} variant="solid">
-            <RouterLink to="/sign-up">Sign Up</RouterLink>
-          </Button>
-          <Button style={{ gridArea: "log-in" }} css={buttonStyles} variant="outlined">
-            <RouterLink to="/log-in">Log In</RouterLink>
-          </Button>
-        </header>
-        {children}
-      </SeriesProvider>
-    </AuthProvider>
+    <SeriesProvider>
+      <header css={headerStyles}>
+        <h1>StockTrends</h1>
+        <SearchSymbol style={{ gridArea: "search" }} />
+        {auth.hasAccessToken()
+          ? <div style={{ margin: "6px 12px 6px auto" }}>Hello {auth.getUsername()}</div>
+          : (
+            <>
+              <Button style={{ gridArea: "sign-up" }} css={{
+                ...buttonStyles, ...css({
+                  ...mq({ min: "641px" })({ marginLeft: "auto" })
+                })
+              }} variant="solid">
+                <RouterLink to="/sign-up">Sign Up</RouterLink>
+              </Button>
+              <Button style={{ gridArea: "log-in" }} css={buttonStyles} variant="outlined">
+                <RouterLink to="/log-in">Log In</RouterLink>
+              </Button>
+            </>
+          )}
+      </header>
+      {children}
+    </SeriesProvider>
   );
 }

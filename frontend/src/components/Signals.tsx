@@ -1,5 +1,6 @@
 import { useEffect, useContext, useState, type MouseEventHandler, CSSProperties } from "react";
 import { SeriesContext, Signal } from "../context/SeriesContext.tsx";
+import { useFetch } from "../lib/hooks/useFetch.ts";
 import { SignalsList } from "./SignalsList.tsx";
 import { useTradingDays } from "../lib/hooks/useTradingDays.ts";
 import { Stack } from "@mui/joy";
@@ -12,14 +13,17 @@ type Props = {
 
   const fetchSignals = async (date?: string): Promise<Signal[]> => {
     if (typeof date !== "string" || !date.split("-")[0]?.startsWith("202")) return [];
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/signals?date=${date}`);
-    if (response.status === 400) {
-      return [];
-    } else if (response.status === 404) {
-      return [];
+    const response = await useFetch(`/api/signals?date=${date}`);
+    if (response) {
+        if (response.status === 400) {
+          return [];
+        } else if (response.status === 404) {
+          return [];
+        }
+        const data = await response.json();
+        return data;
     }
-    const data = await response.json();
-    return data;
+    return [];
   }
 
 export function Signals({ screenWidth }: Props) {

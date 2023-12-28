@@ -18,6 +18,7 @@ from mod.authentication import (
     get_current_user,
     login_for_tokens,
     refresh_access_token,
+    is_authenticated,
 )
 
 
@@ -33,17 +34,6 @@ sqliteDatabase = get_db("sqlite")
 postgresDatabase = get_db("postgres")
 
 app = FastAPI()
-
-if os.getenv("SERVER_MODE", False) == "DEVELOPMENT":
-    from fastapi.middleware.cors import CORSMiddleware
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:4173"],
-        allow_methods=["*"],
-        allow_headers=["*"],
-        allow_credentials=True,
-    )
 
 
 @app.on_event("startup")
@@ -80,7 +70,7 @@ current_directory = os.path.dirname(os.path.realpath(__file__))
 file_path = os.path.join(current_directory, "../data/trading-days.json")
 
 
-@app.get("/api/trading-days")
+@app.get("/api/trading-days", response_model=List[str])
 async def get_trading_days():
     try:
         with open(file_path, "r") as file:
@@ -92,18 +82,25 @@ async def get_trading_days():
         return {"error": f"An error occurred: {str(e)}"}
 
 
-@app.post("/api/token")
-async def login(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response
-):
-    return await login_for_tokens(response, form_data)
-
-
 @app.get("/api/users/me")
 async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
     return current_user
 
 
+@app.get("/api/secured")
+def secured_route(auth_status: Annotated[bool, Depends(is_authenticated)]):
+    return {"is_authenticated": auth_status}
+
+
+# Login
+@app.post("/api/token")
+async def login(
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], response: Response
+):
+    return await login_for_tokens(response=response, form_data=form_data)
+
+
+# Sign Up
 @app.post("/api/register", status_code=status.HTTP_201_CREATED)
 async def register_new_user(
     form_data: Annotated[RegisterForm, Depends()], response: Response
@@ -111,6 +108,7 @@ async def register_new_user(
     return await register(response, form_data)
 
 
+# Exchange refresh_token for access_token
 @app.get("/api/refresh-token")
 async def refresh_access_token_handler(
     response: Response, refresh_token: Annotated[str | None, Cookie()] = None

@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from mod.database import get_db, users_table, refresh_tokens_table
 from databases import Database
-from asyncpg import UniqueViolationError
+from asyncpg.exceptions import UniqueViolationError
 
 ACCESS_TOKEN_SECRET_KEY = os.getenv("ACCESS_TOKEN_JWT_SECRET_KEY")
 REFRESH_TOKEN_SECRET_KEY = os.getenv("REFRESH_TOKEN_JWT_SECRET_KEY")
@@ -27,7 +27,7 @@ class RegisterForm:
         username: Annotated[str, Form()],
         password: Annotated[str, Form()],
         full_name: Annotated[str, Form()],
-        email: Annotated[str, Form()]
+        email: Annotated[str, Form()],
     ):
         self.username = username
         self.password = password
@@ -66,6 +66,22 @@ invalid_refresh_token_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Invalid refresh_token",
     headers={"WWW-Authenticate": "Bearer", "set-cookie": "refresh_token=''"},
+)
+
+not_authenticated_exception = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Not authenticated",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+duplicate_refresh_token_exception = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="Duplicate Refresh Token Usage",
+)
+
+refresh_token_exception = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="Unexpected Refresh Token Exception",
 )
 
 
@@ -119,7 +135,7 @@ async def create_user(db: Database, user_in: UserIn):
         if isinstance(e, UniqueViolationError):
             return False
         else:
-            print(e)
+            print(f"{e}")
             return False
 
 
@@ -153,6 +169,22 @@ def create_jwt_token(data: dict, secret, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, secret, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def is_authenticated(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = decode_access_token(token)
+        expiration: str = payload.get("exp")
+        expiration: datetime = payload.get("exp")
+        if datetime.utcnow() > datetime.fromtimestamp(expiration):
+            print("ACCESS_TOKEN EXPIRED")
+            raise not_authenticated_exception
+        username: str = payload.get("sub")
+        if username is None:
+            raise not_authenticated_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise not_authenticated_exception
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
@@ -193,10 +225,11 @@ async def create_token_response(username: str, response: Response):
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
-        samesite="lax",
-        httponly=False,
+        samesite="strict",
+        httponly=True,
         expires=refresh_token_expires,
-    )  # TODO: change samesite attribute to "strict" and httponly=True in production e.g. if os.getenv("SERVER_MODE", False) == "DEVELOPMENT":
+    )
+
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -213,7 +246,7 @@ async def login_for_tokens(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return create_token_response(user["username"], response)
+    return await create_token_response(user["username"], response)
 
 
 async def register(response: Response, form_data: RegisterForm = Depends()):
@@ -233,7 +266,22 @@ async def register(response: Response, form_data: RegisterForm = Depends()):
             detail="User already exists, login with your email.",
         )
 
-    return create_token_response(form_data.username, response)
+    return await create_token_response(form_data.username, response)
+
+
+async def delete_all_active_refresh_tokens_from_user(username: str):
+    delete_all_tokens_from_user_query = refresh_tokens_table.delete().where(
+        refresh_tokens_table.c.username == username
+    )
+
+    await postgresDatabase.execute_many(delete_all_tokens_from_user_query)
+
+
+def delete_refresh_cookie(response: Response):
+    response.set_cookie(
+        key="refresh_token",
+        value="",
+    )
 
 
 async def refresh_access_token(refresh_token, response: Response):
@@ -251,14 +299,18 @@ async def refresh_access_token(refresh_token, response: Response):
         await postgresDatabase.execute(delete_query)
 
         # 2. store newly generated refresh_token here
-        return create_token_response(username=username, response=response)
+        return await create_token_response(username=username, response=response)
     except JWTError:
-        delete_all_tokens_from_user_query = refresh_tokens_table.delete().where(
-            refresh_tokens_table.c.username == username
-        )
-        await postgresDatabase.execute_many(delete_all_tokens_from_user_query)
+        await delete_all_active_refresh_tokens_from_user(username=username)
+        delete_refresh_cookie(response=response)
         raise invalid_refresh_token_exception
+    except UniqueViolationError:
+        await delete_all_active_refresh_tokens_from_user(username=username)
+        delete_refresh_cookie(response=response)
+        raise duplicate_refresh_token_exception
     except Exception as e:
-        print("an exception occurred in refresh_access_token func")
-        print(e)
-        raise e
+        print(f"an unexpected exception occurred in refresh_access_token func\n{e}")
+        print(type(e))
+        await delete_all_active_refresh_tokens_from_user(username=username)
+        delete_refresh_cookie(response=response)
+        raise refresh_token_exception

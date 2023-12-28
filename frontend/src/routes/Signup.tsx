@@ -2,6 +2,7 @@ import { Button, FormControl, FormLabel, Input, Container, Stack, Typography } f
 import { type FormEventHandler, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { useFetch } from '../lib/hooks/useFetch';
 
 
 export function Signup() {
@@ -15,11 +16,14 @@ export function Signup() {
         for (const [k, v] of body.entries()) {
             console.log(k, v);
         }
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/register`, {
+        useFetch(`/api/register`, {
             method: 'POST',
             body,
         })
-        .then((res) => res.json())
+        .then((res) => {
+            if (res?.headers.get("Content-Type") === 'application/json') return res.json();
+            else throw res;
+        })
         .then((jsonRes) => {
             if (jsonRes.detail) {
                 if (typeof jsonRes.detail === 'string')
@@ -30,7 +34,7 @@ export function Signup() {
             }
 
         })
-        .catch(() => { setFormError("An unexpected error occurred. Check your network connection.") })
+        .catch((e) => { console.log("[Signup]", e); setFormError("An unexpected error occurred. Check your network connection.") })
         .finally(() => {
             console.log("Hello [username]", authContext.getUsername());
         });

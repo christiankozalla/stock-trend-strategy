@@ -1,39 +1,35 @@
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../context/AuthContext";
-
-const navigate = useNavigate();
+import { auth } from "../../context/AuthContext";
 
 export async function useFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
-    const authContext = useContext(AuthContext);
     try {
-        init = { ...init, credentials: import.meta.env.PROD ? 'same-origin' : 'include' };
-        const originalResponse = await globalThis.fetch(input, init)
+        setAccessTokenHeader(init);
+        const originalResponse = await fetch(input, init);
 
         if (originalResponse.status === 401) {
             const accessTokenResponse = await getNewAccessToken();
-            if (accessTokenResponse) {
-                authContext.setAccessToken(await accessTokenResponse.json());
-                return globalThis.fetch(input, init);
+            if (accessTokenResponse.status == 401) {
+                window.location.assign("/log-in");
+            } else {
+                auth.setAccessToken(await accessTokenResponse.json());
+                setAccessTokenHeader(init);
+                return fetch(input, init);
             }
         }
 
         return originalResponse;
     } catch (e) {
-        navigate("/error");
+        console.error("[useFetch] error: ", (e as Error).message);
+        console.log(JSON.stringify(e))
     }
 }
 
 
-async function getNewAccessToken(): Promise<Response | void> {
-    const response = await globalThis.fetch(`${import.meta.env.VITE_BACKEND_URL}/api/refresh-token`, {
-        credentials: import.meta.env.PROD ? 'same-origin' : 'include'
+function getNewAccessToken(): Promise<Response> {
+    return globalThis.fetch("/api/refresh-token", {
+        credentials: 'same-origin'
     });
+}
 
-    if (response.status === 401) {
-        navigate("/log-in");
-        return;
-    }
-
-    return response;
+function setAccessTokenHeader(init: RequestInit) {
+    init.headers = { ...(init.headers || {}), Authorization: `Bearer ${auth.accessToken}` };
 }

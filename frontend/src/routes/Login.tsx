@@ -2,6 +2,7 @@ import { Button, FormControl, FormLabel, Input, Container, Stack, Typography } f
 import { type FormEventHandler, useState, useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../context/AuthContext';
+import { useFetch } from '../lib/hooks/useFetch';
 
 export function Login() {
     const authContext = useContext(AuthContext);
@@ -11,23 +12,27 @@ export function Login() {
         event.preventDefault();
 
         const body = new FormData(event.currentTarget);
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/token`, {
+        useFetch(`/api/token`, {
             method: 'POST',
-            credentials: import.meta.env.PROD ? 'same-origin' : 'include', // this makes sure, a refresh-token can be set via a set-cookie response header
+            credentials: 'include', // this makes sure, a refresh-token can be set via a set-cookie response header
             body,
         })
-            .then((res) => res.json())
+            .then((res) => {
+                if (res?.headers.get("Content-Type") === 'application/json') return res.json();
+                else throw res;
+            })
             .then((jsonRes) => {
                 if (jsonRes.detail) {
                     if (typeof jsonRes.detail === 'string')
                         setFormError(jsonRes.detail);
                 } else {
+                    console.log("json res", jsonRes);
                     authContext.setAccessToken(jsonRes as { access_token: string; token_type: 'bearer' });
                     navigate("/");
                 }
 
             })
-            .catch(() => { setFormError("An unexpected error occurred. Check your network connection.") })
+            .catch((e) => { console.log("[Login]", e); setFormError("An unexpected error occurred. Check your network connection.") })
             .finally(() => {
                 console.log("Hello [username]", authContext.getUsername());
             });

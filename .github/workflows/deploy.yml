@@ -1,4 +1,4 @@
-name: Deploy Deno App and React Frontend
+name: Deploy FastAPI App, Deno Worker and React Frontend
 
 on:
   # Runs on pushes targeting the default branch

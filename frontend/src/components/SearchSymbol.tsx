@@ -1,17 +1,20 @@
 import { type CSSProperties, SyntheticEvent, useContext } from "react";
 import { SeriesContext } from "../context/SeriesContext";
+import { AuthContext } from "../context/AuthContext";
 import { useFetch } from "../lib/hooks/useFetch";
 import { Autocomplete } from "@mui/joy";
 import symbols from "../../../app/worker/alpaca/symbols.json";
 
 export function SearchSymbol({ style }: { style: CSSProperties }) {
   const { setSeries } = useContext(SeriesContext);
+  const authContext = useContext(AuthContext);
+  const { fetch } = useFetch(authContext);
 
   const submitSymbol = async (_event: SyntheticEvent, symbol: string | null) => {
     if (!symbol) {
       return;
     }
-    const [seriesRes, signalsRes] = await Promise.allSettled([useFetch(`/api/symbols/${symbol.toUpperCase()}.json`), useFetch(`/api/signals/${symbol}`)]);
+    const [seriesRes, signalsRes] = await Promise.allSettled([fetch(`/api/symbols/${symbol.toUpperCase()}.json`), fetch(`/api/signals/${symbol}`)]);
 
     if (seriesRes.status === 'fulfilled') {
       if (seriesRes.value?.status === 200) {

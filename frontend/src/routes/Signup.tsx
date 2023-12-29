@@ -1,7 +1,7 @@
 import { Button, FormControl, FormLabel, Input, Container, Stack, Typography } from '@mui/joy';
 import { type FormEventHandler, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext, Auth } from '../context/AuthContext';
 import { useFetch } from '../lib/hooks/useFetch';
 
 
@@ -9,6 +9,8 @@ export function Signup() {
     const authContext = useContext(AuthContext);
     const navigate = useNavigate()
     const [formError, setFormError] = useState("");
+    const { fetch } = useFetch(authContext);
+
     const handleSubmit: FormEventHandler<HTMLFormElement> = (event) => {
         event.preventDefault();
 
@@ -16,7 +18,7 @@ export function Signup() {
         for (const [k, v] of body.entries()) {
             console.log(k, v);
         }
-        useFetch(`/api/register`, {
+        fetch(`/api/register`, {
             method: 'POST',
             body,
         })
@@ -29,14 +31,14 @@ export function Signup() {
                 if (typeof jsonRes.detail === 'string')
                     setFormError(jsonRes.detail);
             } else {
-                authContext.setAccessToken(jsonRes as { access_token: string; token_type: 'bearer' });
+                authContext.setAuth(new Auth(jsonRes as { access_token: string; token_type: 'bearer' }));
                 navigate("/");
             }
 
         })
         .catch((e) => { console.log("[Signup]", e); setFormError("An unexpected error occurred. Check your network connection.") })
         .finally(() => {
-            console.log("Hello [username]", authContext.getUsername());
+            console.log("Hello [username]", authContext.auth?.getUsername());
         });
     };
 

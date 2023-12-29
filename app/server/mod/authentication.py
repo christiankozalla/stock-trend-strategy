@@ -217,10 +217,14 @@ async def create_token_response(username: str, response: Response):
         data={"sub": username}, expires_delta=refresh_token_expires
     )
 
-    store_refresh_token_query = refresh_tokens_table.insert().values(
-        username=username, token=refresh_token
+    # alternative way to build SQL statements
+    # store_refresh_token_query = refresh_tokens_table.insert().values(
+    #     username=username, token=refresh_token
+    # )
+    await postgresDatabase.execute(
+        query="INSERT INTO refresh_tokens (username, token) VALUES (:username, :token)",
+        values={"username": username, "token": refresh_token},
     )
-    await postgresDatabase.execute(store_refresh_token_query)
 
     response.set_cookie(
         key="refresh_token",
@@ -228,6 +232,7 @@ async def create_token_response(username: str, response: Response):
         samesite="strict",
         httponly=True,
         expires=refresh_token_expires,
+        path="/",
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
@@ -274,13 +279,17 @@ async def delete_all_active_refresh_tokens_from_user(username: str):
         refresh_tokens_table.c.username == username
     )
 
-    await postgresDatabase.execute_many(delete_all_tokens_from_user_query)
+    await postgresDatabase.execute(query=delete_all_tokens_from_user_query)
 
 
 def delete_refresh_cookie(response: Response):
     response.set_cookie(
         key="refresh_token",
         value="",
+        samesite="strict",
+        httponly=True,
+        expires=0,
+        path="/",
     )
 
 
@@ -295,22 +304,27 @@ async def refresh_access_token(refresh_token, response: Response):
             (refresh_tokens_table.c.username == username)
             & (refresh_tokens_table.c.token == refresh_token)
         )
+
         # 1. delete the incoming refresh_token from the table refresh_tokens_table -> if error -> invalid token exception
-        await postgresDatabase.execute(delete_query)
+        await postgresDatabase.execute(query=delete_query)
 
         # 2. store newly generated refresh_token here
         return await create_token_response(username=username, response=response)
     except JWTError:
-        await delete_all_active_refresh_tokens_from_user(username=username)
         delete_refresh_cookie(response=response)
         raise invalid_refresh_token_exception
     except UniqueViolationError:
         await delete_all_active_refresh_tokens_from_user(username=username)
         delete_refresh_cookie(response=response)
-        raise duplicate_refresh_token_exception
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"detail": "why cant I raise an exception while deleting cookies"}
+        # raise duplicate_refresh_token_exception # raising an exception prevents the set-cookie header to delete the cookie
     except Exception as e:
         print(f"an unexpected exception occurred in refresh_access_token func\n{e}")
         print(type(e))
-        await delete_all_active_refresh_tokens_from_user(username=username)
+        if username:
+            await delete_all_active_refresh_tokens_from_user(username=username)
         delete_refresh_cookie(response=response)
-        raise refresh_token_exception
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return {"detail": "why cant I raise an exception while deleting cookies"}
+        # raise refresh_token_exception # raising an exception prevents the set-cookie header to delete the cookie

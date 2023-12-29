@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 
 export type AuthInitProps = {
     access_token: string;
@@ -6,14 +6,15 @@ export type AuthInitProps = {
 };
 
 type TokenPayload = { sub: string; exp: number };
+export type SetAuth = React.Dispatch<React.SetStateAction<Auth | null>>;
 
-class Auth {
+export class Auth {
     accessToken?: string;
     accessTokenType?: string;
 
-    constructor(props?: AuthInitProps) {
-        this.accessToken = props?.access_token;
-        this.accessTokenType = props?.token_type;
+    constructor(props: AuthInitProps) {
+        this.accessToken = props.access_token;
+        this.accessTokenType = props.token_type;
     }
 
     hasAccessToken(): boolean {
@@ -26,11 +27,6 @@ class Auth {
             typeof exp === 'number'
             && Date.now() > (exp * 1000)
         );
-    }
-
-    setAccessToken({ access_token, token_type }: AuthInitProps) {
-        this.accessToken = access_token;
-        this.accessTokenType = token_type;
     }
 
     getUsername() {
@@ -47,10 +43,12 @@ class Auth {
     }
 }
 
-export const auth = new Auth();
-
-export const AuthContext = createContext<Auth>(auth);
+export const AuthContext = createContext<{
+    auth: Auth | null,
+    setAuth: SetAuth,
+}>({ auth: null, setAuth: () => {} });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+    const [auth, setAuth] = useState<Auth | null>(null);
+    return <AuthContext.Provider value={{ auth, setAuth }}>{children}</AuthContext.Provider>;
 }

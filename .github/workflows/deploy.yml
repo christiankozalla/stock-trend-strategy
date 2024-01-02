@@ -100,4 +100,4 @@ jobs:
           echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
           rsync --recursive --delete --exclude='data' --exclude='.env' --exclude='server/series' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
-          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app/server && export $(cat .env | xargs) && poetry update && pm2 restart stock-trends-backend --update-env"
+          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/christiankozalla/stock-trend-strategy/production/app/server && export $(cat .env | xargs) && poetry update && pm2 restart stock-trends-backend --update-env"

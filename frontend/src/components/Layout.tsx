@@ -41,12 +41,12 @@ export function Layout({
   children: ReactNode;
 }) {
   const authContext = useContext(AuthContext);
-  const { fetch } = useFetch(authContext);
+  const { fetchNewAccessToken } = useFetch(authContext);
 
   useEffect(() => {
     console.log("Trying to authenticate with refresh-token");
     console.log("auth", authContext);
-    fetch("/api/secured") // fetch wrapper shadowing globalThis.fetch
+    fetchNewAccessToken() // fetch wrapper shadowing globalThis.fetch
       .then((res) => console.log("[Layout] Auth by Refresh Token Cookie: ", res))
       .catch((e) => console.error("[Layout] Auth by Refresh Token Cookie:", e));
   }, []);

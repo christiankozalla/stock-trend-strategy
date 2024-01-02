@@ -63,5 +63,6 @@ export function useFetch({ auth, setAuth }: {
 
     return {
         fetch: fetchWithAuth,
+        fetchNewAccessToken: getNewAccessToken,
     }
 }

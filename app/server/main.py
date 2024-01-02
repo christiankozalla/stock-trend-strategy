@@ -87,9 +87,9 @@ async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]
     return current_user
 
 
-@app.get("/api/secured")
-def secured_route(auth_status: Annotated[bool, Depends(is_authenticated)]):
-    return {"is_authenticated": auth_status}
+# @app.get("/api/secured")
+# def secured_route(auth_status: Annotated[bool, Depends(is_authenticated)]):
+#     return {"is_authenticated": auth_status}
 
 
 # Login

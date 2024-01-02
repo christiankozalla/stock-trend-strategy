@@ -25,6 +25,23 @@ export function useFetch({ auth, setAuth }: {
         }
     }
 
+    function setNewAccessToken() {
+        return getNewAccessToken().then((response) => {
+            if (!response) {
+                console.log("[useFetch setNewAccessToken]: Dropped call to /api/refresh-token because of 30 seconds request timeout");
+            } else if (
+                response.status === 200
+                && response.headers.get("Content-Type") === "application/json"
+            ) {
+                return response.json();
+            } else {
+                throw response;
+            }
+        }).then(jsonRes => {
+            setAuth(new Auth(jsonRes as { access_token: string; token_type: "bearer" }));
+        }).catch((err) => err);
+    }
+
     async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {
         try {
             setAccessTokenHeader(init);
@@ -63,6 +80,6 @@ export function useFetch({ auth, setAuth }: {
 
     return {
         fetch: fetchWithAuth,
-        fetchNewAccessToken: getNewAccessToken,
+        fetchNewAccessToken: setNewAccessToken,
     }
 }

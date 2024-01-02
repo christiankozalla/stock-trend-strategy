@@ -15,9 +15,6 @@ export function Signup() {
         event.preventDefault();
 
         const body = new FormData(event.currentTarget);
-        for (const [k, v] of body.entries()) {
-            console.log(k, v);
-        }
         fetch(`/api/register`, {
             method: 'POST',
             body,

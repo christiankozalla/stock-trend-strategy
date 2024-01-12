@@ -177,12 +177,11 @@ def is_authenticated(token: str = Depends(oauth2_scheme)):
         expiration: str = payload.get("exp")
         expiration: datetime = payload.get("exp")
         if datetime.utcnow() > datetime.fromtimestamp(expiration):
-            print("ACCESS_TOKEN EXPIRED")
             raise not_authenticated_exception
         username: str = payload.get("sub")
         if username is None:
             raise not_authenticated_exception
-        token_data = TokenData(username=username)
+        return True
     except JWTError:
         raise not_authenticated_exception
 

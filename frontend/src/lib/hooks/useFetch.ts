@@ -7,15 +7,14 @@ export function useFetch({ auth, setAuth }: {
     setAuth: SetAuth,
 }) {
     function setAccessTokenHeader(init: RequestInit) {
-        console.log("[useFetch] setting access_token", auth?.accessToken);
         if (typeof auth?.accessToken === "string")
             init.headers = { ...(init.headers || {}), Authorization: `Bearer ${auth?.accessToken}` };
     }
 
     async function getNewAccessToken(): Promise<Response | void> {
         const now = Date.now();
-        if ((auth !== null && auth.isAccessTokenExpired()) || (now - lastTokenRefreshCall) / 1000 > THIRTY_SECONDS) {
-            console.log("[useFetch]: isAccessTokenExpired", auth?.isAccessTokenExpired());
+        if ((auth !== null && auth.isAccessTokenExpired) || (now - lastTokenRefreshCall) / 1000 > THIRTY_SECONDS) {
+            console.log("[useFetch]: isAccessTokenExpired", auth?.isAccessTokenExpired);
             lastTokenRefreshCall = now;
             return fetch("/api/refresh-token", {
                 credentials: "same-origin"

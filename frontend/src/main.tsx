@@ -4,11 +4,11 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import "./global.css";
+import "primereact/resources/themes/bootstrap4-light-blue/theme.css";
 import App from './App.tsx'
 import { Signup } from './routes/Signup.tsx'
 import { Login } from './routes/Login.tsx'
-
-import '@fontsource/inter';
 
 const router = createBrowserRouter([
   {

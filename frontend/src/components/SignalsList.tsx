@@ -1,5 +1,5 @@
 import type { Signal } from "../context/SeriesContext";
-import { List } from "@mui/joy";
+import styles from "./css/SignalsList.module.css";
 
 type Props = {
     signals: Signal[];
@@ -8,7 +8,7 @@ type Props = {
 }
 
 export function SignalsList({ signals, type, expanded }: Props) {
-    return <List size="sm"  sx={{ color: expanded ? "initial" : "white", fontSize: 10, overflowY: "scroll", maxHeight: 200, height: expanded ? "initial" : 0, '&::-webkit-scrollbar': { width: "4px" }, '&::-webkit-scrollbar-thumb': { background: "grey", } }}>
+    return <ul className={styles.scrollbar} style={{ color: expanded ? "initial" : "white", fontSize: 10, overflowY: "scroll", maxHeight: 200, height: expanded ? "initial" : 0 }}>
         {signals
             .sort((a, b) => +new Date(b.date) - +new Date(a.date))
             .map((signal) => (
@@ -19,7 +19,7 @@ export function SignalsList({ signals, type, expanded }: Props) {
                     Risk {(calculateRisk(signal.open, signal.stop) * 100).toFixed(1)} % Target {((calculateRisk(signal.open, signal.stop) * 2 + 1) * signal.open).toFixed(1)}
                 </li>
             ))}
-    </List>
+    </ul>
 
 }
 

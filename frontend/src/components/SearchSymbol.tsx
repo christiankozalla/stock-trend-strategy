@@ -2,7 +2,7 @@ import { type CSSProperties, SyntheticEvent, useContext } from "react";
 import { SeriesContext } from "../context/SeriesContext";
 import { AuthContext } from "../context/AuthContext";
 import { useFetch } from "../lib/hooks/useFetch";
-import { Autocomplete } from "@mui/joy";
+import { AutoComplete } from "primereact/autocomplete";
 import symbols from "../../../app/worker/alpaca/symbols.json";
 
 export function SearchSymbol({ style }: { style: CSSProperties }) {
@@ -35,12 +35,11 @@ export function SearchSymbol({ style }: { style: CSSProperties }) {
   };
 
   return (
-    <Autocomplete
+    <AutoComplete
       type="text"
       placeholder="Symbol e.g. AAPL"
-      options={symbols}
+      suggestions={symbols}
       onChange={submitSymbol}
-      size="sm"
       filterOptions={filterOptions}
       autoFocus
       style={style}

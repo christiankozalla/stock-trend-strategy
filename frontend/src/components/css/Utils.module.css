@@ -1,0 +1,11 @@
+.centeredContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.authForm {
+    label ~ input {
+        margin: 4px 0 12px 0;
+    }
+}

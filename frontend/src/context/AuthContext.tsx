@@ -17,23 +17,23 @@ export class Auth {
         this.accessTokenType = props.token_type;
     }
 
-    hasAccessToken(): boolean {
+    get hasAccessToken(): boolean {
         return Boolean(this.accessToken);
     }
 
-    isAccessTokenExpired(): boolean {
-        const exp = this.#tokenPayload()?.exp
+    get isAccessTokenExpired(): boolean {
+        const exp = this.#tokenPayload?.exp
         return (
             typeof exp === 'number'
             && Date.now() > (exp * 1000)
         );
     }
 
-    getUsername() {
-        return this.#tokenPayload()?.sub;
+    get username() {
+        return this.#tokenPayload?.sub;
     }
 
-    #tokenPayload(): TokenPayload | void {
+    get #tokenPayload(): TokenPayload | void {
         if (typeof this.accessToken !== 'string') return;
         try {
             return JSON.parse(atob(this.accessToken.split(".")[1]));

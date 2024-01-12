@@ -3,7 +3,6 @@ import { SeriesContext, Signal } from "../context/SeriesContext.tsx";
 import { useFetch } from "../lib/hooks/useFetch.ts";
 import { SignalsList } from "./SignalsList.tsx";
 import { useTradingDays } from "../lib/hooks/useTradingDays.ts";
-import { Stack } from "@mui/joy";
 import { AuthContext } from "../context/AuthContext.tsx";
 
 const buttonStyles: CSSProperties = { zIndex: 1, borderRadius: "50%", border: "1px solid black", cursor: "pointer", width: 16, height: 16, position: "absolute", left: -6, top: -6 };
@@ -12,11 +11,9 @@ type Props = {
     screenWidth: number;
 }
 
-
-
 export function Signals({ screenWidth }: Props) {
     const { latestTradingDay } = useTradingDays();
-    const[latestSignals, setLatestSignals] = useState<Signal[]>([]);
+    const [latestSignals, setLatestSignals] = useState<Signal[]>([]);
     const isDesktop: boolean = screenWidth > 640;
     const authContext = useContext(AuthContext)
     const { series } = useContext(SeriesContext);
@@ -30,15 +27,15 @@ export function Signals({ screenWidth }: Props) {
         const response = await fetch(`/api/signals?date=${date}`);
         if (response) {
             if (response.status === 400) {
-              return [];
+                return [];
             } else if (response.status === 404) {
-              return [];
+                return [];
             }
             const data = await response.json();
             return data;
         }
         return [];
-      }
+    }
 
     const moveElement: MouseEventHandler<HTMLElement> = (e) => {
         if (mouseDown) {
@@ -51,10 +48,9 @@ export function Signals({ screenWidth }: Props) {
     }, [latestTradingDay]);
 
     return (
-        <Stack
-            style={{ padding: "6px 12px", position: "absolute", left: position.left, top: position.top, backgroundColor: "white" }}
+        <div
+            style={{ display: "flex", flexDirection: "column", padding: "6px 12px", position: "absolute", left: position.left, top: position.top, backgroundColor: "white" }}
             onMouseUp={() => setMouseDown(false)}
-            sx={{ boxShadow: "lg" }}
         >
             {isDesktop ? (
                 <div
@@ -75,17 +71,17 @@ export function Signals({ screenWidth }: Props) {
             }
             {series.symbol ? (
                 <>
-                    <h4>Signals for {series.symbol}</h4>
+                    <h4 style={{ paddingBottom: "6px" }}>Signals for {series.symbol}</h4>
                     <SignalsList type="symbol" signals={series.signals} expanded={expanded} />
                 </>
             ) : (
                 <>
-                    <h4>Latest Signals</h4>
+                    <h4 style={{ paddingBottom: "6px" }}>Latest Signals</h4>
                     <SignalsList type="date" signals={latestSignals} expanded={expanded} />
                 </>
 
 
             )}
-        </Stack>
+        </div>
     )
 }

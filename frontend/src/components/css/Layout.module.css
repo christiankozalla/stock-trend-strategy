@@ -1,0 +1,40 @@
+/* Header Styles */
+@media (min-width: 641px) {
+  .header {
+    display: flex;
+    padding: 0 12px;
+    margin: 6px 0;
+    gap: 12px;
+  }
+
+  .leftButton {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    display: grid;
+    grid-template-rows: auto 36px;
+    grid-template-columns: 44vw 28vw 28vw;
+    grid-template-areas: "headline headline headline" "search sign-up log-in";
+    padding: 0 6px;
+    gap: 6px;
+  }
+
+  .header h1 {
+    grid-area: headline;
+    display: block;
+    height: min-content;
+    font-size: 12px;
+    width: 100vw;
+  }
+  /* Button Styles */
+  .button {
+    max-width: 100px;
+  }
+
+  .leftButton {
+    margin-left: initial;
+  }
+}

@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Detect package manager
         id: detect-package-manager
         run: |
@@ -50,7 +50,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "20"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
           cache-dependency-path: ${{ env.FRONTEND_SRC_PATH }}/package-lock.json
       - name: Install dependencies
@@ -66,7 +66,7 @@ jobs:
           path: ${{ env.FRONTEND_SRC_PATH }}/dist
   
   build-backend: ## Backend does not need to be built. Just upload the source code and run with `deno run` on the server
-    name: Build Deno Worker And FastAPI App
+    name: Upload Deno Worker And FastAPI App
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

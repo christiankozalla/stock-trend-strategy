@@ -1,6 +1,6 @@
 import { alpaca } from "./client.ts";
 import { type DailyCandle, transform } from "./transformation.ts";
-import stockSymbols from "./symbols.json" assert { type: "json" };
+import stockSymbols from "./symbols.json" with { type: "json" };
 import { seriesPath } from "./utils.ts";
 
 export async function fetchDailySeries() {

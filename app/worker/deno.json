@@ -1,11 +1,12 @@
 {
   "imports": {
-    "std/": "https://deno.land/std@0.193.0/"
+    "std/": "https://deno.land/std@0.224.0/"
   },
   "tasks": {
     "fmt": "deno fmt",
-    "cli:update-series-and-signals": "deno run -A --unstable cron/update-series-and-signals.ts",
-    "db:migrate-up": "DB_MIGRATIONS=UP deno run -A --unstable db.ts",
+    "cli:update-series-and-signals": "deno run -A --unstable-ffi cron/update-series-and-signals.ts",
+    "cli:write-average-volume": "deno run -A --unstable-ffi cron/write-average-volume.ts",
+    "db:migrate-up": "DB_MIGRATIONS=UP deno run -A --unstable-ffi db.ts",
     "update-lock": "deno cache --lock=deno.lock --lock-write cron/update-series-and-signals.ts"
   },
   "fmt": {

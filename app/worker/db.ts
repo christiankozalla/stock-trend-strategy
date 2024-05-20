@@ -1,4 +1,4 @@
-import { Database } from "https://deno.land/x/sqlite3@0.9.1/mod.ts";
+import { Database } from "https://deno.land/x/sqlite3@0.11.1/mod.ts";
 import { join } from "std/path/mod.ts";
 
 const __dirname = new URL(".", import.meta.url).pathname;

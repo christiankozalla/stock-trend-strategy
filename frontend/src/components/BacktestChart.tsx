@@ -70,7 +70,7 @@ export function BacktestChart({
                 domain: [new Date(Math.min(...dates)), new Date(Math.max(...dates))],
             })
         },
-        [margin, series],
+        [margin, series, innerWidth],
     );
 
     const performanceScale = useMemo(
@@ -81,7 +81,7 @@ export function BacktestChart({
                 domain: [Math.min(...performances), Math.max(...performances)],
             });
         },
-        [margin, orderPositions],
+        [margin, orderPositions, height],
     );
 
     return (

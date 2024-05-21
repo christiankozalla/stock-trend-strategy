@@ -17,8 +17,6 @@ export function SeriesChart({
     height,
     margin = { top: 0, right: 0, bottom: 40, left: 60 },
 }: ChartProps) {
-    if (width < 10) return null;
-
     const { series } = useContext(SeriesContext);
 
     // bounds
@@ -29,13 +27,14 @@ export function SeriesChart({
 
     // scales
     const dateScale = useMemo(
-        () =>{
+        () => {
             const dates = series.data.map((candle) => +new Date(candle.date));
             return scaleTime({
                 range: [margin.left, innerWidth + margin.left],
                 domain: [new Date(Math.min(...dates)), new Date(Math.max(...dates))],
-            })},
-        [margin, series],
+            })
+        },
+        [margin, series, innerWidth],
     );
     const priceScale = useMemo(
         () => {
@@ -46,18 +45,19 @@ export function SeriesChart({
                 nice: true,
             });
         },
-        [margin, series],
+        [margin, series, height],
     );
 
     const scaleCandle = (d: DailyCandle) => ({ o: priceScale(d.o), h: priceScale(d.h), l: priceScale(d.l), c: priceScale(d.c), date: dateScale(new Date(d.date)) });
 
+    if (width < 10) return null;
     return (
         <svg width={width} height={height}>
             {series.data.map(scaleCandle).map((scaled) => (
                 <SvgCandle key={scaled.date} {...scaled} x={scaled.date} />
             ))}
             <AxisLeft scale={priceScale} left={margin.left} top={margin.top} orientation="left" label="Price" tickFormat={(p) => `$ ${p.valueOf().toFixed(0)}`} />
-            <AxisBottom scale={dateScale} top={innerHeight + 2*margin.top } label="Time" tickValues={dateTickValues} tickFormat={dateTickFormat} />
+            <AxisBottom scale={dateScale} top={innerHeight + 2 * margin.top} label="Time" tickValues={dateTickValues} tickFormat={dateTickFormat} />
         </svg>
     );
-};
+}

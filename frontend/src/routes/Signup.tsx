@@ -23,12 +23,12 @@ export function Signup() {
       body,
     })
       .then((res) => {
-        if (res?.headers.get('Content-Type') === 'application/json') return res.json();
+        if (res?.headers.get('Content-Type') === 'application/json') return res.json() as Promise<Record<string, unknown>>;
         else throw res;
       })
       .then((jsonRes) => {
-        if (jsonRes.detail) {
-          if (typeof jsonRes.detail === 'string') setFormError(jsonRes.detail);
+        if (typeof jsonRes?.detail === 'string') {
+          setFormError(jsonRes.detail);
         } else {
           authContext.setAuth(new Auth(jsonRes as { access_token: string; token_type: 'bearer' }));
           navigate('/');

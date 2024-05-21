@@ -38,7 +38,7 @@ export function useFetch({ auth, setAuth }: {
             }
         }).then(jsonRes => {
             setAuth(new Auth(jsonRes as { access_token: string; token_type: "bearer" }));
-        }).catch((err) => err);
+        }).catch((err) => {console.error("[useFetch setNewAccessToken]: ", err);});
     }
 
     async function fetchWithAuth(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response | void> {

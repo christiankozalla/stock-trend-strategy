@@ -36,7 +36,7 @@ export class Auth {
     get #tokenPayload(): TokenPayload | void {
         if (typeof this.accessToken !== 'string') return;
         try {
-            return JSON.parse(atob(this.accessToken.split(".")[1]));
+            return JSON.parse(atob(this.accessToken.split(".")[1])) as TokenPayload;
         } catch (e) {
             console.warn("Unable to decode or parse auth token payload", e);
         }

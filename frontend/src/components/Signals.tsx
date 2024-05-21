@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState, type MouseEventHandler, CSSProperties } from "react";
+import { useEffect, useContext, useState, useCallback , type MouseEventHandler, CSSProperties } from "react";
 import { SeriesContext, Signal } from "../context/SeriesContext.tsx";
 import { useFetch } from "../lib/hooks/useFetch.ts";
 import { SignalsList } from "./SignalsList.tsx";
@@ -22,7 +22,7 @@ export function Signals({ screenWidth }: Props) {
     const [expanded, setExpanded] = useState(true);
     const [position, setPosition] = useState<{ top: number, left: number }>({ top: isDesktop ? 48 : 72, left: screenWidth - 200 });
 
-    const fetchSignals = async (date?: string): Promise<Signal[]> => {
+    const fetchSignals = useCallback(async (date?: string): Promise<Signal[]> => {
         if (typeof date !== "string" || !date.split("-")[0]?.startsWith("202")) return [];
         const response = await fetch(`/api/signals?date=${date}`);
         if (response) {
@@ -31,11 +31,10 @@ export function Signals({ screenWidth }: Props) {
             } else if (response.status === 404) {
                 return [];
             }
-            const data = await response.json();
-            return data;
+            return response.json() as Promise<Signal[]>;
         }
         return [];
-    }
+    }, [fetch]);
 
     const moveElement: MouseEventHandler<HTMLElement> = (e) => {
         if (mouseDown) {
@@ -44,8 +43,8 @@ export function Signals({ screenWidth }: Props) {
     }
 
     useEffect(() => {
-        fetchSignals(latestTradingDay).then((data) => setLatestSignals(data));
-    }, [latestTradingDay]);
+        fetchSignals(latestTradingDay).then((data) => { setLatestSignals(data); }).catch((err) => { console.error("[getSignals failed]:", err); });
+    }, [latestTradingDay, fetchSignals]);
 
     return (
         <div

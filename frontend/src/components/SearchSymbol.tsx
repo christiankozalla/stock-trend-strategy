@@ -4,6 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import { useFetch } from "../lib/hooks/useFetch";
 import { AutoComplete } from "primereact/autocomplete";
 import symbols from "../../../app/worker/alpaca/symbols.json";
+import { type FormEvent } from "primereact/ts-helpers";
+import { type DailyCandle } from "../../../app/worker/alpaca/transformation";
 
 export function SearchSymbol({ style }: { style: CSSProperties }) {
   const { setSeries } = useContext(SeriesContext);
@@ -24,7 +26,8 @@ export function SearchSymbol({ style }: { style: CSSProperties }) {
 
     if (seriesRes.status === 'fulfilled') {
       if (seriesRes.value?.status === 200) {
-        const data = await seriesRes.value.json();
+        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+        const data: DailyCandle[] = await seriesRes.value?.json();
         const signals = signalsRes.status === 'fulfilled' ? await signalsRes.value?.json() : [];
 
         setSeries({ symbol, data, signals });
@@ -34,23 +37,24 @@ export function SearchSymbol({ style }: { style: CSSProperties }) {
     }
   };
 
-  return (<AutoComplete
-    value={selectedSymbol}
-    onChange={(e) => setSelectedSymbol(e.value)}
-    suggestions={suggestedSymbols}
-    completeMethod={(event) => {
-      const input = event.query.toUpperCase();
-      const exactMatch = symbols.find((o) => o === input);
+  return (
+    <AutoComplete
+      value={selectedSymbol}
+      onChange={(e: FormEvent<string>) => e.value && setSelectedSymbol(e.value)}
+      suggestions={suggestedSymbols}
+      completeMethod={(event) => {
+        const input = event.query.toUpperCase();
+        const exactMatch = symbols.find((o) => o === input);
 
-      if (exactMatch) setSuggestedSymbols([exactMatch]);
-      else
-        setSuggestedSymbols(symbols
-          .filter((o) => o.includes(input))
-          .sort((a, b) => (a.startsWith(input) ? -1 : b.startsWith(input) ? 1 : 0)));
-    }}
-    onSelect={(e) => submitSymbol(e.value)}
-    placeholder="Symbol e.g. AAPL"
-    autoFocus
-    style={style}
-  />);
+        if (exactMatch) setSuggestedSymbols([exactMatch]);
+        else
+          setSuggestedSymbols(symbols
+            .filter((o) => o.includes(input))
+            .sort((a, b) => (a.startsWith(input) ? -1 : b.startsWith(input) ? 1 : 0)));
+      }}
+      onSelect={(e) => { typeof e.value === 'string' && submitSymbol(e.value).catch((err) => { console.error("[submitSymbol]:", err); }); }}
+      placeholder="Symbol e.g. AAPL"
+      autoFocus
+      style={style}
+    />);
 }

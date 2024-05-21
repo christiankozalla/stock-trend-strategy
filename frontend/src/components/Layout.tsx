@@ -18,10 +18,10 @@ export function Layout({
   useEffect(() => {
     console.log("Trying to authenticate with refresh-token");
     console.log("auth", authContext);
-    fetchNewAccessToken() // fetch wrapper shadowing globalThis.fetch
+    fetchNewAccessToken()
       .then((res) => console.log("[Layout] Auth by Refresh Token Cookie: ", res))
       .catch((e) => console.error("[Layout] Auth by Refresh Token Cookie:", e));
-  }, []);
+  }, [authContext, fetchNewAccessToken]);
 
   return (
     <SeriesProvider>

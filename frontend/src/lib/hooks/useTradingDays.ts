@@ -4,7 +4,7 @@ export function useTradingDays() {
 
   useEffect(() => {
     fetch(`/api/trading-days`)
-      .then((res) => res.json())
+      .then((res) => res.json() as Promise<string[]>)
       .then((data) => setTradingDays(data))
       .catch((e) => { console.log('Error fetching trading-days', e); });
   }, []);

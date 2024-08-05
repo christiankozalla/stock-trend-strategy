@@ -1,5 +1,5 @@
-import { encode as encodeBase64 } from "std/encoding/base64.ts";
-import { load } from "std/dotenv/mod.ts"; // load env vars from .env
+import { encodeBase64 } from "@std/encoding/base64";
+import { load } from "@std/dotenv"; // load env vars from .env
 await load({ export: true, envPath: "../.env" });
 
 const barsExample = {

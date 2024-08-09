@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Web Server for Strock Trends Strategy Project"
 authors = ["Christian Kozalla <christian.kozalla@gmail.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -17,6 +18,7 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.6"
 httpx = "^0.26.0"
 pytest = "^7.4.3"
+python-dotenv = "^1.0.1"
 
 
 [build-system]

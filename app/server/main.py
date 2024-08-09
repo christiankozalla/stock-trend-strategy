@@ -1,4 +1,4 @@
-from typing import List, Annotated
+from typing import List, Annotated, Literal
 import os
 import json
 from fastapi import FastAPI, Response, Depends, Cookie, status
@@ -10,6 +10,7 @@ from mod.database import (
     create_postgres_tables,
     create_sqlite_tables,
     signals_table,
+    query_daily_change,
     User,
 )
 from mod.authentication import (
@@ -20,7 +21,6 @@ from mod.authentication import (
     refresh_access_token,
     is_authenticated,
 )
-
 
 class Signal(BaseModel):
     id: int
@@ -114,3 +114,9 @@ async def refresh_access_token_handler(
     response: Response, refresh_token: Annotated[str | None, Cookie()] = None
 ):
     return await refresh_access_token(refresh_token, response)
+
+@app.get("/api/heat-map")
+async def get_heat_map_prices(
+    response: Response, date: str, set: Literal["nasdaq", "sp"]
+):
+    return await query_daily_change(date=date, set=set)

@@ -1,0 +1,30 @@
+[
+    {
+      "sector": "Technology",
+      "symbols": ["AAPL", "MSFT", "NVDA", "ADBE", "INTC", "CSCO", "AMD", "QCOM", "TXN", "AVGO", "MU", "AMAT", "ADI", "LRCX", "KLAC"]
+    },
+    {
+      "sector": "Communication Services",
+      "symbols": ["GOOG", "META", "NFLX", "CMCSA", "TMUS", "CHTR", "ATVI", "EA", "TTD"]
+    },
+    {
+      "sector": "Consumer Cyclical",
+      "symbols": ["AMZN", "TSLA", "BKNG", "SBUX", "MAR", "LULU", "EBAY", "ROST", "DLTR"]
+    },
+    {
+      "sector": "Consumer Defensive",
+      "symbols": ["PEP", "COST", "MDLZ", "KHC", "WBA"]
+    },
+    {
+      "sector": "Healthcare",
+      "symbols": ["GILD", "REGN", "VRTX", "ISRG", "ILMN", "ALGN", "DXCM"]
+    },
+    {
+      "sector": "Financials",
+      "symbols": ["PYPL", "NDAQ"]
+    },
+    {
+      "sector": "Industrials",
+      "symbols": ["HON", "CSX", "FAST"]
+    }
+  ]

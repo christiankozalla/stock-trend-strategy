@@ -1,0 +1,505 @@
+
+-- Software - Infrastructure
+MSFT
+ORCL
+ADBE
+PANW
+SNPS
+CRWD
+FTNT
+GPN
+GDDY
+CPAY
+VRSN
+GEN
+AKAM
+FFIV
+
+-- Consumer Electronics
+AAPL
+
+-- Semiconductors
+NVDA
+AVGO
+AMD
+QCOM
+TXN
+INTC
+MU
+ADI
+NXPI
+MCHP
+MPWR
+ON
+SWKS
+QRVO
+
+-- Software - Application
+CRM
+INTU
+NOW
+UBER
+CDNS
+ROP
+ADSK
+FICO
+ANSS
+TYL
+PTC
+PAYC
+DAY
+
+-- Semiconductor Equipment & Materials
+AMAT
+LRCX
+KLAC
+TER
+
+-- Communication Equipment
+CSCO
+MSI
+HPE
+ZBRA
+JNPR
+
+-- Computer Hardware
+ANET
+SMCI
+HPQ
+NTAP
+WDC
+STX
+
+-- Scientific & Technical Instruments
+GRMN
+FTV
+KEYS
+TDY
+TRMB
+
+-- Solar
+FSLR
+ENPH
+
+-- Electronic Components
+APH
+TEL
+GLW
+JBL
+
+-- Information Technology Services
+ACN
+IBM
+FI
+FIS
+CTSH
+IT
+CDW
+BR
+LDOS
+JKHY
+EPAM
+
+-- Credit Services
+V
+MA
+AXP
+PYPL
+COF
+DFS
+SYF
+
+-- Banks Diversified
+JPM
+BAC
+WFC
+C
+
+-- Insurance Diversified
+BRK-B
+AIG
+ACGL
+
+-- Asset Management
+BX
+BLK
+KKR
+BK
+AMP
+TROW
+STT
+PFG
+NTRS
+BEN
+IVZ
+
+-- Financial Data & Stock Exchanges
+SPGI
+ICE
+MCO
+CME
+MSCI
+NDAQ
+CBOE
+FDS
+
+-- Banks Regional
+USB
+PNC
+TFC
+FITB
+MTB
+HBAN
+RF
+CFG
+KEY
+
+-- Insurance Brokers
+MMC
+AON
+AJG
+WTW
+BRO
+
+-- Insurance Life
+PRU
+MET
+AFL
+PRU
+GL
+
+-- Insurance Reinsurance
+EG
+
+-- Insurance Specialty
+AIZ
+
+-- Internet Content & Information
+GOOG
+META
+
+-- Telecom Services
+TMUS
+VZ
+CMCSA
+T
+CHTR
+
+-- Entertainment
+NFLX
+DIS
+LYV
+WBD
+FOXA
+NWS
+PARA
+
+-- Electronic Gaming & Multimedia
+EA
+TTWO
+
+-- Advertising Agencies
+OMC
+IPG
+
+-- Drug Manufacturers General
+LLY
+JNJ
+MRK
+ABBV
+AMGN
+PFE
+GILD
+BMY
+BIIB
+
+-- Healthcare Plans
+ELV
+UNH
+CI
+CVS
+HUM
+CNC
+MOH
+
+-- Diagnostics & Research
+TMO
+DHR
+IQV
+IDXX
+A
+MTD
+WAT
+LH
+DGX
+RVTY
+CRL
+
+-- Medical Devices
+ABT
+SYK
+BSX
+MDT
+EW
+DXCM
+GEHC
+ZBH
+STE
+ALGN
+PODD
+BIO
+
+-- Biotechnology
+VRTX
+REGN
+MRNA
+INCY
+TECH
+
+-- Medical Instruments & Supplies
+ISRG
+BDX
+RMD
+WST
+BAX
+HOLX
+COO
+TFX
+
+-- Medical Distribution
+MCK
+COR
+CAH
+HSIC
+
+-- Building Products & Equipment
+TT
+CARR
+JCI
+BLDR
+MAS
+
+-- Waste Management
+WM
+RSG
+
+-- Staffing & Employent Services
+ADP
+PAYX
+
+-- Consulting Services
+VRSK
+EFX
+
+-- Engineering & Construction
+J
+PWR
+
+-- Rental & Leasing Services
+URI
+
+-- Airlines
+UAL
+LUV
+DAL
+AAL
+
+-- Electrical Equipment
+HUBB
+
+-- Tools & Accessories
+SNA
+SWK
+
+-- Security & Protection Services
+ALLE
+
+-- Trucking
+ODFL
+
+-- Utilities
+NEE
+SO
+DUK
+AEP
+D
+PCG
+PEG
+EXC
+ED
+XEL
+EIX
+WEC
+DTE
+ETR
+AEE
+FE
+ES
+PPL
+CMS
+CNP
+LNT
+EVRG
+PNW
+
+-- Utilities Renewable
+CEG
+GEV
+
+-- Utilities Diversified
+SRE
+AES
+
+-- Independent Power Producers
+VST
+NRG
+
+-- Utilities Regulated Gas
+NI
+ATO
+
+-- Utilities Regulated Water
+AWK
+
+-- Basic Materials - Speciality Chemicals
+LIN
+SHW
+ECL
+APD
+DD
+LYB
+PPG
+IFF
+EMN
+ALB
+
+-- Basic Materials - Copper
+FXC
+
+-- Basic Materials - Building Materials
+VMC
+MLM
+
+-- Basic Materials - Gold
+NEM
+
+-- Basic Materials - Agricultural Inputs
+CTVA
+CF
+MOS
+FMC
+
+-- Basic Materials - Steel
+NUE
+STLD
+
+-- Basic Materials - Chemicals
+DOW
+CE
+
+-- Consumer Defensive - Discount Stores
+WMT
+COST
+TGT
+DG
+DLTR
+
+-- Consumer Defensive - Household & Personal Products
+PG
+CL
+KMB
+EL
+KVUE
+CHD
+CLX
+
+-- Consumer Defensive - Beverages - Non-Alcoholic
+KO
+PEP
+MNST
+KDP
+
+-- Consumer Defensive - Tobacco
+PM
+MO
+
+-- Consumer Defensive - Packaged Foods
+KHC
+GIS
+K
+MKC
+HRL
+CAG
+CPB
+SJM
+LW
+
+-- Consumer Defensive - Farm Products
+ADM
+TSN
+BG
+
+-- Consumer Defensive - Beverages - Wineries & Distilleries
+STZ
+BF-B
+KR
+SYY
+
+-- Consumer Defensive - Confectioners
+MDLZ
+HSY
+
+-- Energy - Oil & Gas
+XOM
+CVX
+
+-- Real Estate - REIT
+AMT
+EQIX
+DLR
+CCI
+IRM
+WY
+SBAC
+
+-- Real Estate - REIT Industrial
+PLD
+PSA
+EXR
+
+-- Real Estate - REIT Residential
+AVB
+EQR
+INVH
+ESS
+MAA
+UDR
+CPT
+
+-- Real Estate - REIT Retail
+SPG
+O
+KIM
+REG
+FRT
+CSGP
+CBRE
+ARE
+BXP
+VICI
+WELL
+VTR
+DOC
+
+-- Industrials - Integrated Freight & Logistics
+UPS
+FDX
+EXPD
+JBHT
+CHRW
+
+-- Industrials - Railroads
+UNP
+CSX
+NSC
+WAB

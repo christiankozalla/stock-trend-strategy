@@ -2,8 +2,12 @@ import os
 from typing import Literal
 import databases
 import sqlalchemy
+from sqlalchemy import select, and_
 from sqlalchemy.dialects import sqlite, postgresql
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
 
 db_username = os.getenv("POSTGRES_USER")
 db_password = os.getenv("POSTGRES_PASSWORD")
@@ -25,6 +29,20 @@ signals_table = sqlalchemy.Table(
     sqlalchemy.Column("date", sqlalchemy.String),
     sqlalchemy.Column("open", sqlalchemy.Float),
     sqlalchemy.Column("stop", sqlalchemy.Float),
+)
+
+daily_change_table = sqlalchemy.Table(
+    'daily_change',
+    sqliteMetadata,
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column('date', sqlalchemy.Date, nullable=False),
+    sqlalchemy.Column('symbol', sqlalchemy.String, nullable=False),
+    sqlalchemy.Column('open', sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column('close', sqlalchemy.Float, nullable=False),
+    sqlalchemy.Column('previousClose', sqlalchemy.Float, nullable=False),
+    sqlalchemy.Index('idx_date', 'date'),
+    sqlalchemy.Index('idx_symbol', 'symbol'),
+    sqlalchemy.UniqueConstraint('symbol', 'date', name='uq_symbol_date', sqlite_on_conflict='IGNORE')  # Handle uniqueness with conflict policy
 )
 
 # sqliteEngine = sqlalchemy.create_engine(SQLITE_DB_URL,  connect_args={"check_same_thread": False})
@@ -122,3 +140,21 @@ def get_db(name: Literal["postgres", "sqlite"]):
     elif name == "sqlite":
         return sqliteDatabase
     raise ValueError("Invalid database name. Expected 'postgres' or 'sqlite'.")
+
+
+sp_set = ["AAPL", "MSFT", "NVDA", "AVGO", "ADBE", "GOOG", "META", "NFLX", "DIS", "CMCSA", "AMZN", "TSLA", "HD", "NKE", "MCD", "WMT", "PG", "KO", "COST", "PEP", "UNH", "JNJ", "LLY", "ABBV", "MRK", "JPM", "V", "BAC", "MA", "WFC", "GE", "CAT", "UPS", "HON", "BA", "XOM", "CVX", "COP", "SLB", "EOG"]
+nasdaq_set = ["AAPL", "MSFT", "NVDA", "ADBE", "INTC", "CSCO", "AMD", "QCOM", "TXN", "AVGO", "MU", "AMAT", "ADI", "LRCX", "KLAC", "GOOG", "META", "NFLX", "CMCSA", "TMUS", "CHTR", "ATVI", "EA", "TTD", "AMZN", "TSLA", "BKNG", "SBUX", "MAR", "LULU", "EBAY", "ROST", "DLTR", "PEP", "COST", "MDLZ", "KHC", "WBA", "GILD", "REGN", "VRTX", "ISRG", "ILMN", "ALGN", "DXCM", "PYPL", "NDAQ", "HON", "CSX", "FAST"]
+async def query_daily_change(date: str, set: Literal["nasdaq", "sp"]):
+
+    query = select(
+        daily_change_table.c.close,
+        daily_change_table.c.previousClose,
+        daily_change_table.c.symbol
+    ).where(
+        and_(
+            daily_change_table.c.date == date,
+            daily_change_table.c.symbol.in_(sp_set if set == "sp" else nasdaq_set)
+        )
+    )
+    results = await get_db("sqlite").fetch_all(query=query)
+    return results

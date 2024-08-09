@@ -7,6 +7,7 @@
   "tasks": {
     "fmt": "deno fmt",
     "cli:update-series-and-signals": "deno run -A --unstable-ffi cron/update-series-and-signals.ts",
+    "cli:update-daily-change": "deno run -A --unstable-ffi cron/update-daily-change.ts",
     "db:migrate-up": "DB_MIGRATIONS=UP deno run -A --unstable-ffi db.ts",
     "update-lock": "deno cache --lock=deno.lock cron/update-series-and-signals.ts"
   },

@@ -4,6 +4,7 @@ import json
 from fastapi import FastAPI, Response, Depends, Cookie, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from mod.database import (
     get_db,
@@ -35,6 +36,14 @@ postgresDatabase = get_db("postgres")
 
 app = FastAPI()
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://tradingview.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def startup():

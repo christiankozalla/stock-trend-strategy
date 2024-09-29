@@ -1,8 +1,8 @@
 {
   "imports": {
-    "@std/dotenv": "jsr:@std/dotenv@^0.225.0",
-    "@std/encoding": "jsr:@std/encoding@^1.0.1",
-    "@std/path": "jsr:@std/path@^1.0.2"
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.2",
+    "@std/encoding": "jsr:@std/encoding@^1.0.5",
+    "@std/path": "jsr:@std/path@^1.0.6"
   },
   "tasks": {
     "fmt": "deno fmt",

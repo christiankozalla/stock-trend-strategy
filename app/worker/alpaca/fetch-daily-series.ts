@@ -1,6 +1,6 @@
 import { alpaca } from "./client.ts";
 import { type DailyCandle, transform } from "./transformation.ts";
-import stockSymbols from "./symbols.json" assert { type: "json" };
+import stockSymbols from "./symbols.json" with { type: "json" };
 import { seriesPath } from "./utils.ts";
 
 export async function fetchDailySeries() {
@@ -44,8 +44,7 @@ export async function fetchDailySeries() {
       );
     } catch (e) {
       console.log(
-        "Error trying to merge with existing series data.\nSaving to new file: ",
-        symbol + ".json",
+        `Error trying to merge with existing series data.\nSaving to new file: ${symbol}.json`,
       );
       console.error(e);
       await Deno.writeTextFile(

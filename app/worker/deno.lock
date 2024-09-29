@@ -5,14 +5,14 @@
       "jsr:@denosaurs/plug@1": "jsr:@denosaurs/plug@1.0.6",
       "jsr:@std/assert@^0.217.0": "jsr:@std/assert@0.217.0",
       "jsr:@std/assert@^0.221.0": "jsr:@std/assert@0.221.0",
-      "jsr:@std/dotenv@^0.225.0": "jsr:@std/dotenv@0.225.0",
+      "jsr:@std/dotenv@^0.225.2": "jsr:@std/dotenv@0.225.2",
       "jsr:@std/encoding@^0.221.0": "jsr:@std/encoding@0.221.0",
-      "jsr:@std/encoding@^1.0.1": "jsr:@std/encoding@1.0.1",
+      "jsr:@std/encoding@^1.0.5": "jsr:@std/encoding@1.0.5",
       "jsr:@std/fmt@^0.221.0": "jsr:@std/fmt@0.221.0",
       "jsr:@std/fs@^0.221.0": "jsr:@std/fs@0.221.0",
       "jsr:@std/path@0.217": "jsr:@std/path@0.217.0",
       "jsr:@std/path@^0.221.0": "jsr:@std/path@0.221.0",
-      "jsr:@std/path@^1.0.2": "jsr:@std/path@1.0.2",
+      "jsr:@std/path@^1.0.6": "jsr:@std/path@1.0.6",
       "npm:@auth/core": "npm:@auth/core@0.9.0_preact@10.11.3",
       "npm:@auth/dynamodb-adapter": "npm:@auth/dynamodb-adapter@1.0.0_@aws-sdk+client-dynamodb@3.370.0_@aws-sdk+lib-dynamodb@3.370.0__@aws-sdk+client-dynamodb@3.370.0__@aws-sdk+types@3.370.0",
       "npm:@aws-sdk/client-dynamodb": "npm:@aws-sdk/client-dynamodb@3.370.0",
@@ -35,14 +35,14 @@
       "@std/assert@0.221.0": {
         "integrity": "a5f1aa6e7909dbea271754fd4ab3f4e687aeff4873b4cef9a320af813adb489a"
       },
-      "@std/dotenv@0.225.0": {
-        "integrity": "44db32932c67df82790a3e6847d7007befb6cc22d71f2f3ee7b7d00e1f0d6c94"
+      "@std/dotenv@0.225.2": {
+        "integrity": "e2025dce4de6c7bca21dece8baddd4262b09d5187217e231b033e088e0c4dd23"
       },
       "@std/encoding@0.221.0": {
         "integrity": "d1dd76ef0dc5d14088411e6dc1dede53bf8308c95d1537df1214c97137208e45"
       },
-      "@std/encoding@1.0.1": {
-        "integrity": "5955c6c542ebb4ce6587c3b548dc71e07a6c27614f1976d1d3887b1196cf4e65"
+      "@std/encoding@1.0.5": {
+        "integrity": "ecf363d4fc25bd85bd915ff6733a7e79b67e0e7806334af15f4645c569fefc04"
       },
       "@std/fmt@0.221.0": {
         "integrity": "379fed69bdd9731110f26b9085aeb740606b20428ce6af31ef6bd45ef8efa62a"
@@ -66,8 +66,8 @@
           "jsr:@std/assert@^0.221.0"
         ]
       },
-      "@std/path@1.0.2": {
-        "integrity": "a452174603f8c620bd278a380c596437a9eef50c891c64b85812f735245d9ec7"
+      "@std/path@1.0.6": {
+        "integrity": "ab2c55f902b380cf28e0eec501b4906e4c1960d13f00e11cfbcd21de15f18fed"
       }
     },
     "npm": {
@@ -1027,9 +1027,9 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/dotenv@^0.225.0",
-      "jsr:@std/encoding@^1.0.1",
-      "jsr:@std/path@^1.0.2"
+      "jsr:@std/dotenv@^0.225.2",
+      "jsr:@std/encoding@^1.0.5",
+      "jsr:@std/path@^1.0.6"
     ]
   }
 }

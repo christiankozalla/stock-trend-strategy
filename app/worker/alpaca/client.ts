@@ -31,10 +31,9 @@ if (
 }
 
 const alpacaAuthHeader = {
-  Authorization: "Basic " +
-    encodeBase64(
-      `${ALPACA_SANDBOX_KEY}:${ALPACA_SANDBOX_SECRET}`,
-    ),
+  Authorization: `Basic ${encodeBase64(
+    `${ALPACA_SANDBOX_KEY}:${ALPACA_SANDBOX_SECRET}`,
+  )}`,
 };
 
 const START_DATE = "2022-01-01";
@@ -55,11 +54,11 @@ export const alpaca = {
       if (response.status === 200) {
         const json: AlpacaBarsResponse = await response.json();
         return json;
-      } else {
-        throw new Error(
-          `API responded with non-200 status code: ${response.status}`,
-        );
       }
+
+      throw new Error(
+        `API responded with non-200 status code: ${response.status}`,
+      );
     } catch (e) {
       console.error("Error Alpaca Client 'alpaca.series': ", e);
     }

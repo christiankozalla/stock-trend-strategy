@@ -3,7 +3,7 @@ import { seriesPath } from "../alpaca/utils.ts";
 import { db } from "../db.ts";
 
 const insertStatement = db.prepare(
-  `INSERT INTO daily_change (date, symbol, open, close, previousClose) VALUES (:date, :symbol, :open, :close, :previousClose)`
+  `INSERT INTO daily_change (date, symbol, open, close, previousClose) VALUES (:date, :symbol, :open, :close, :previousClose)`,
 );
 
 export async function writeDailyChange(numberOfLatestDays?: number) {

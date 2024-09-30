@@ -1,7 +1,7 @@
 from typing import List, Annotated, Literal
 import os
 import json
-from fastapi import FastAPI, Response, Depends, Cookie, status
+from fastapi import FastAPI, Query, HTTPException, Response, Depends, Cookie, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
@@ -90,6 +90,28 @@ async def get_trading_days():
     except Exception as e:
         return {"error": f"An error occurred: {str(e)}"}
 
+
+
+@app.get("/api/stock-data")
+async def get_stock_data(
+    symbol: str = Query(..., description="Stock symbol"),
+    date: str = Query(..., description="Date in YYYY-MM-DD format")
+):
+    symbol = symbol.upper()
+    
+    file_path = os.path.join(current_directory, "series", f"{symbol}.json")
+    
+    if not os.path.isfile(file_path):
+        raise HTTPException(status_code=404, detail=f"Data for symbol {symbol} not found")
+    
+    with open(file_path, "r") as file:
+        data = json.load(file)
+    
+    for item in data:
+        if item["date"] == date:
+            return item
+    
+    raise HTTPException(status_code=404, detail=f"Data for date {date} not found")
 
 @app.get("/api/users/me")
 async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):

@@ -10,7 +10,7 @@ Part 1: Deno Worker + FastAPI Application in `./app`
 
 Part 2: React Frontend in `./frontend`
 
-- Displays chart and signals with data from Deno Server
+- Displays chart and signals with data served by FastAPI.
 
 ## Develop
 

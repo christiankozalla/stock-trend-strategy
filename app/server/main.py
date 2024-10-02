@@ -1,11 +1,15 @@
 from typing import List, Annotated, Literal
 import os
 import json
-from fastapi import FastAPI, Query, HTTPException, Response, Depends, Cookie, status
+from fastapi import FastAPI, Query, HTTPException, Response, Depends, Cookie, status, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from pathlib import Path
+import logging
+from logging.handlers import RotatingFileHandler
+
 from mod.database import (
     get_db,
     create_postgres_tables,
@@ -36,6 +40,19 @@ postgresDatabase = get_db("postgres")
 
 app = FastAPI()
 
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+LOG_FILE = PROJECT_ROOT / "logs" / "requests.txt"
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+# Set up logging
+logger = logging.getLogger("api_logger")
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(LOG_FILE, maxBytes=10*1024*1024, backupCount=5)  # 10MB file size, 5 backup files
+formatter = logging.Formatter('%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +64,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
+    logger.info("API startup")
     await get_db("sqlite").connect()
     await get_db("postgres").connect()
     await create_postgres_tables()
@@ -55,6 +73,7 @@ async def startup():
 
 @app.on_event("shutdown")
 async def shutdown():
+    logger.info("API shutdown")
     await get_db("sqlite").disconnect()
     await get_db("postgres").disconnect()
 
@@ -94,24 +113,32 @@ async def get_trading_days():
 
 @app.get("/api/stock-data")
 async def get_stock_data(
+    request: Request,
     symbol: str = Query(..., description="Stock symbol"),
     date: str = Query(..., description="Date in YYYY-MM-DD format")
 ):
     symbol = symbol.upper()
     
     file_path = os.path.join(current_directory, "series", f"{symbol}.json")
+
+    logger.info(f"Request URL: {request.url}")
     
     if not os.path.isfile(file_path):
-        raise HTTPException(status_code=404, detail=f"Data for symbol {symbol} not found")
+        error_msg = f"Data for symbol {symbol} not found"
+        logger.info(f"Response: {error_msg}")
+        raise HTTPException(status_code=404, detail=error_msg)
     
     with open(file_path, "r") as file:
         data = json.load(file)
     
     for item in data:
         if item["date"] == date:
+            logger.info(f"Response: {json.dumps(item)}")
             return item
     
-    raise HTTPException(status_code=404, detail=f"Data for date {date} not found")
+    error_msg = f"Data for date {date} not found"
+    logger.info(f"Response: {error_msg}")
+    raise HTTPException(status_code=404, detail=error_msg)
 
 @app.get("/api/users/me")
 async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):

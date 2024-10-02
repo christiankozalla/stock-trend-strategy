@@ -25,5 +25,6 @@ yarn-error.log*
 
 # stocks data
 /app/data
+/logs/*
 
 *.pyc

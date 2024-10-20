@@ -19,6 +19,7 @@ python-multipart = "^0.0.6"
 httpx = "^0.26.0"
 pytest = "^7.4.3"
 python-dotenv = "^1.0.1"
+supervisor = "^4.2.5"
 
 
 [build-system]

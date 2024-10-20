@@ -101,4 +101,4 @@ jobs:
           rsync --recursive --delete --verbose ./frontend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/frontend
           rsync --recursive --delete --exclude='data' --exclude='.env' --exclude='server/series' --verbose ./backend-dist/ ${{ secrets.VPS_HOST }}:/var/www/sites/${{ github.repository }}/production/app
           sleep 5
-          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app/server && export $(cat .env | xargs); /home/christian/.local/bin/poetry update; poetry run supervisord"
+          ssh ${{ secrets.VPS_HOST }} "cd /var/www/sites/${{ github.repository }}/production/app/server && export $(cat .env | xargs); /home/christian/.local/bin/poetry update; /home/christian/.local/bin/poetry run supervisorctl update stock-trends-backend"
